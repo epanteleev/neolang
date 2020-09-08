@@ -44,3 +44,8 @@ public:
         }
     }
 };
+
+class Call: public Interpret {
+public:
+    static void apply(Vm& vm) noexcept;
+};

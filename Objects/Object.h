@@ -1,7 +1,9 @@
 #pragma once
+
+#include <string>
 #include "ObjFrwd.h"
 
 class Object {
 public:
-    ObjString* name;
+    std::string m_name;
 };

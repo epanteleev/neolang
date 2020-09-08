@@ -4,6 +4,7 @@
 enum class OpCode: uint8_t {
     iADD,
     iPUSH,
-    iSTORE
+    iSTORE,
+    CALL
 };
 

@@ -2,3 +2,5 @@
 
 class Object;
 class ObjString;
+
+class Vm;

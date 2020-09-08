@@ -8,8 +8,8 @@ Instruction Vm::currentInst() const {
 void Vm::trace() {
     fprintf(stderr, "...Vm trace...\n");
     fprintf(stderr, "Stack: \n");
-    for (Value i = m_apiStack.pop(); m_apiStack.empty(); m_apiStack.pop()) {
-        fprintf(stderr, "%lu\n", i.value());
+    while (m_apiStack.nonEmpty()) {
+        fprintf(stderr, "%lu\n", m_apiStack.pop().value());
     }
 }
 

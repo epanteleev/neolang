@@ -7,6 +7,7 @@ enum class Type: uint8_t {
     UINT64,
     FLOAT32,
     FLOAT64,
+    REF,
     UNDEFINED
 };
 

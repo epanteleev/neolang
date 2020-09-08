@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <climits>
+
+#include "ObjFrwd.h"
 #include "TypeCheck.h"
 
 class Value {
@@ -30,6 +32,11 @@ public:
             m_type(Type::FLOAT64)
     {}
 
+    Value(uintptr_t ref) :
+            m_value(ref),
+            m_type(Type::REF)
+    {}
+
     constexpr Type type() const noexcept { return m_type; }
     constexpr uint64_t value() const noexcept { return m_value; }
 
@@ -42,6 +49,9 @@ public: // Conversions.
         return (float)(m_value);
     }
 
+    inline Object* toObject() const noexcept {
+        return (Object*)((uintptr_t)m_value);
+    }
 public:
     inline bool operator==(const Value& value) const noexcept {
         return m_type == value.m_type && m_value == value.m_value;
