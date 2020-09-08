@@ -6,6 +6,7 @@
 class ApiStack final {
 public:
     ApiStack() = default;
+
     ~ApiStack() = default;
 
     inline Value pop() noexcept {
@@ -29,6 +30,7 @@ public:
     inline void push(Value value) {
         m_stack.push(value);
     }
+
 private:
     std::stack<Value> m_stack;
 };

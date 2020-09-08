@@ -1,4 +1,5 @@
 #pragma once
+
 #include <stack>
 #include <vector>
 #include <array>
@@ -7,18 +8,19 @@
 #include "ApiStack.h"
 #include "ObjMethod.h"
 #include "Instruction.h"
+#include "SymbolTable.h"
 
 class Vm {
 public:
     Vm() = default;
 
-    Vm(std::vector<Instruction> inst, SymbolTable symTable):
-        m_insts(std::move(inst)),
-        m_symTable(std::move(symTable))
-    {}
+    explicit Vm(std::vector<Instruction> inst, SymbolTable symTable) :
+            m_insts(std::move(inst)),
+            m_symTable(std::move(symTable)) {}
+
     ~Vm() = default;
 
-    inline ApiStack& stack() noexcept {
+    inline ApiStack &stack() noexcept {
         return m_apiStack;
     }
 
@@ -34,11 +36,12 @@ public:
         m_local[idx] = val;
     }
 
-    inline Natives findFunc(const std::string& name) noexcept {
+    inline Natives findFunc(const std::string &name) noexcept {
         return m_symTable[name];
     }
 
     void trace();
+
 private:
     /// Virtual stack of virtual machine.
     ApiStack m_apiStack;

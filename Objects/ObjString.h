@@ -7,17 +7,18 @@
 #include "Object.h"
 #include "ObjFrwd.h"
 
-class ObjString: public Object {
+class ObjString : public Object {
 public:
-    static Value make(const char* cstr) noexcept {
-        size_t length = strlen(cstr);
-        auto* str =  new ObjString(); //(ObjString*) malloc(sizeof(ObjString) + length);
-        str->m_cstr = std::string(cstr);
-        str->m_name = std::string("ObjString");
-        return Value((uintptr_t)str);
+    ObjString(const std::string& string):
+        Object("ObjString"),
+        m_cstr(string)
+    {}
+
+    static Value make(const std::string& string) noexcept {
+        return Value((uintptr_t) new ObjString(string));
     }
 
-    inline const std::string& str() const noexcept {
+    inline const std::string &str() const noexcept {
         return m_cstr;
     }
 

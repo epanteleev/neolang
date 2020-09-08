@@ -9,14 +9,15 @@
 
 class Interpret {
 public:
-    typedef void (*Actions)(Vm& vm);
+    typedef void (*Actions)(Vm &vm);
+
 public:
-    static void apply(Vm& vm);
+    static void apply(Vm &vm);
 };
 
-class iAdd: public Interpret {
+class iAdd : public Interpret {
 public:
-    static void apply(Vm& vm) {
+    static void apply(Vm &vm) noexcept {
         const auto a = vm.stack().pop();
         const auto b = vm.stack().pop();
         const auto result = a.toInt32() + b.toInt32();
@@ -24,16 +25,36 @@ public:
     }
 };
 
-class iPush: public Interpret {
+class iSub : public Interpret {
 public:
-    static void apply(Vm& vm) {
+    static void apply(Vm &vm) noexcept {
+        const auto a = vm.stack().pop();
+        const auto b = vm.stack().pop();
+        const auto result = a.toInt32() - b.toInt32();
+        vm.stack().push(Value(result));
+    }
+};
+
+class iMult : public Interpret {
+public:
+    static void apply(Vm &vm) noexcept {
+        const auto a = vm.stack().pop();
+        const auto b = vm.stack().pop();
+        const auto result = a.toInt32() - b.toInt32();
+        vm.stack().push(Value(result));
+    }
+};
+
+class iPush : public Interpret {
+public:
+    static void apply(Vm &vm) noexcept {
         vm.stack().push(vm.currentInst().val);
     }
 };
 
-class iStore: public Interpret {
+class iStore : public Interpret {
 public:
-    static void apply(Vm& vm) noexcept {
+    static void apply(Vm &vm) noexcept {
         ASSERT(vm.stack().nonEmpty(), "ApiStack is empty.");
         ASSERT(vm.currentInst().val < 4, "Invalid variable index.");
         const auto a = vm.stack().pop();
@@ -45,7 +66,7 @@ public:
     }
 };
 
-class Call: public Interpret {
+class Call : public Interpret {
 public:
-    static void apply(Vm& vm) noexcept;
+    static void apply(Vm &vm) noexcept;
 };

@@ -9,10 +9,10 @@
 
 #define DEBUG
 
-static void println(Vm* vm) {
-    Object* obj = vm->stack().pop().toObject();
+static void println(Vm *vm) {
+    Object *obj = vm->stack().pop().toObject();
     if (obj->m_name == "ObjString") {
-        auto cstr = (ObjString*)obj;
+        auto cstr = (ObjString *) obj;
         printf("%s", cstr->str().data());
     } else {
         UNREACHABLE();
