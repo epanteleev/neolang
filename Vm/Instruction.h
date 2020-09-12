@@ -5,13 +5,21 @@
 
 struct Instruction {
     explicit Instruction(OpCode code, Value val) :
-            opCode(code),
-            val(val) {}
+            m_opCode(code),
+            m_val(val) {}
 
     explicit Instruction(OpCode code) :
-            opCode(code),
-            val(Value()) {}
+            m_opCode(code),
+            m_val(Value()) {}
 
-    OpCode opCode;
-    Value val;
+    inline OpCode code() const noexcept {
+        return m_opCode;
+    }
+    inline Value val() const noexcept {
+        return m_val;
+    }
+
+private:
+    OpCode m_opCode;
+    Value m_val;
 };

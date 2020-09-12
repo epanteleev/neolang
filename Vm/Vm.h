@@ -4,11 +4,13 @@
 #include <vector>
 #include <array>
 #include <map>
+
 #include "Value.h"
 #include "ApiStack.h"
 #include "ObjMethod.h"
 #include "Instruction.h"
 #include "SymbolTable.h"
+#include "ObjModule.h"
 
 class Vm {
 public:
@@ -36,7 +38,7 @@ public:
         m_local[idx] = val;
     }
 
-    inline Natives findFunc(const std::string &name) noexcept {
+    inline NativeFunc findFunc(const std::string &name) noexcept {
         return m_symTable[name];
     }
 
@@ -50,4 +52,6 @@ private:
     std::array<Value, 4> m_local;
     SymbolTable m_symTable;
     size_t ip{};
+
+    std::list<std::unique_ptr<ObjModule>> m_modules;
 };

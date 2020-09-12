@@ -10,8 +10,6 @@ public:
         m_name(std::move(className))
     {}
 
-    Object() = default;
-
 public:
     std::string m_name;
 };

@@ -40,7 +40,7 @@ public:
     static void apply(Vm &vm) noexcept {
         const auto a = vm.stack().pop();
         const auto b = vm.stack().pop();
-        const auto result = a.toInt32() - b.toInt32();
+        const auto result = a.toInt32() * b.toInt32();
         vm.stack().push(Value(result));
     }
 };
@@ -48,18 +48,19 @@ public:
 class iPush : public Interpret {
 public:
     static void apply(Vm &vm) noexcept {
-        vm.stack().push(vm.currentInst().val);
+        vm.stack().push(vm.currentInst().val());
     }
 };
 
 class iStore : public Interpret {
 public:
     static void apply(Vm &vm) noexcept {
+        const auto instruction = vm.currentInst();
         ASSERT(vm.stack().nonEmpty(), "ApiStack is empty.");
-        ASSERT(vm.currentInst().val < 4, "Invalid variable index.");
+        ASSERT(instruction.val() < 4, "Invalid variable index.");
         const auto a = vm.stack().pop();
         if (a.type() == Type::INT32) {
-            vm.store(a, vm.currentInst().val.value());
+            vm.store(a, instruction.val().value());
         } else {
             UNREACHABLE();
         }

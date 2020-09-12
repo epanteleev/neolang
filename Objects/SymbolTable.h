@@ -3,6 +3,6 @@
 
 #include "ObjFrwd.h"
 
-typedef void (*Natives)(Vm *obj);
+typedef void (*NativeFunc)(Vm *obj);
 
-using SymbolTable = std::map<std::string, Natives>;
+using SymbolTable = std::map<std::string, NativeFunc>;

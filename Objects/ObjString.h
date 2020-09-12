@@ -4,14 +4,15 @@
 #include <cstring>
 #include "Common.h"
 #include <algorithm>
+#include <utility>
 #include "Object.h"
 #include "ObjFrwd.h"
 
 class ObjString : public Object {
 public:
-    ObjString(const std::string& string):
+    ObjString(std::string  string):
         Object("ObjString"),
-        m_cstr(string)
+        m_cstr(std::move(string))
     {}
 
     static Value make(const std::string& string) noexcept {

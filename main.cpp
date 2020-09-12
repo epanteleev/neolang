@@ -2,12 +2,11 @@
 #include <vector>
 #include <Vm.h>
 #include <map>
+#include <ObjModule.h>
 #include "Interpreter/Interpret.h"
 #include "Common.h"
 #include "ObjString.h"
 #include "ObjMethod.h"
-
-#define DEBUG
 
 static void println(Vm *vm) {
     Object *obj = vm->stack().pop().toObject();
@@ -20,6 +19,7 @@ static void println(Vm *vm) {
 }
 
 int main() {
+
     std::vector<Instruction> inst = {
             Instruction(OpCode::iPUSH, Value(2)),
             Instruction(OpCode::iPUSH, Value(3)),
@@ -29,6 +29,7 @@ int main() {
             Instruction(OpCode::iPUSH, ObjString::make("Hello World")),
             Instruction(OpCode::CALL, ObjString::make("println"))
     };
+
     SymbolTable symTable = {
             {"println", println}
     };
@@ -36,5 +37,14 @@ int main() {
     Vm vm(inst, symTable);
     Interpret::apply(vm);
     vm.trace();
+
+
+    auto method = ObjMethod::make("add");
+    method->addInst(Instruction(OpCode::iPUSH, Value(2)));
+    method->addInst(Instruction(OpCode::iPUSH, Value(3)));
+    method->addInst(Instruction(OpCode::iADD));
+
+    auto module = ObjModule::make();
+    module->addMethod(method);
     return 0;
 }
