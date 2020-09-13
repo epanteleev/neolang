@@ -1,7 +1,6 @@
 #pragma once
 
+class ObjModule;
 class Object;
-
-class ObjString;
-
+class ObjStringLiteral;
 class Vm;

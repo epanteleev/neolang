@@ -1,26 +1,44 @@
 #include <map>
-#include "Interpret.h"
-#include "Object.h"
-#include "ObjString.h"
+#include "Interpreter/Interpret.h"
+#include "Objects/Object.h"
+#include "Objects/ObjStringLiteral.h"
 
-static std::map<OpCode, Interpret::Actions> handlers = {
-        {OpCode::iADD,   iAdd::apply},
-        {OpCode::iPUSH,  iPush::apply},
-        {OpCode::iSTORE, iStore::apply},
-        {OpCode::CALL,   Call::apply},
-        {OpCode::iMULT,  iMult::apply},
-        {OpCode::iSUB,   iSub::apply}
+typedef bool (*Actions)(Vm &vm) noexcept;
+
+static std::map<OpCode, Actions> handlers = {
+        {OpCode::iADD,       iAdd::apply},
+        {OpCode::iPUSH,      iPush::apply},
+        {OpCode::iSTORE,     iStore::apply},
+        {OpCode::CALLSTATIC, CallStatic::apply},
+        {OpCode::iMULT,      iMult::apply},
+        {OpCode::iSUB,       iSub::apply},
+        {OpCode::RET,        Ret::apply}
 };
 
-void Interpret::apply(Vm &vm) {
-    for (; vm.hasNext(); vm.next()) {
-        handlers[vm.currentInst().code()](vm);
+bool Interpret::apply(const std::string& moduleName, Vm &vm) {
+    ObjMethod* method = vm.modules().findMethod(moduleName, "main");
+    vm.callStack().push(Frame(*method));
+    while (true) {
+        auto& frame = vm.frame();
+        if (!frame.hasNext()) {
+            return true;
+        }
+        if (!handlers[frame.inst().code()](vm)) {
+            return false;
+        }
+        frame.next();
     }
 }
 
-void Call::apply(Vm &vm) noexcept {
-    Instruction inst = vm.currentInst();
-    std::string &name = const_cast<std::string &>(((ObjString *) inst.val().toObject())->str());
-    NativeFunc f = vm.findFunc(name);
-    f(&vm);
+bool CallStatic::apply(Vm &vm) noexcept {
+    Frame frame = vm.frame();
+    Instruction inst = frame.inst();
+    const ObjModule& module = frame.method().module();
+    const ObjStringLiteral* moduleName = module.findString(inst.arg0().value());
+    TRACE(vm, moduleName != nullptr, "No found module name.");
+    const ObjStringLiteral* methodName = module.findString(inst.arg1().value());
+    TRACE(vm, methodName != nullptr, "No found method name.");
+    ObjMethod* method = vm.modules().findMethod(moduleName->str(), methodName->str());
+    TRACE(vm, method != nullptr, "Unresolved method " + moduleName->str() + "::" + methodName->str());
+    vm.callStack().push(Frame(*method));
 }

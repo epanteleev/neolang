@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <climits>
 
-#include "ObjFrwd.h"
-#include "TypeCheck.h"
+#include "Objects/ObjFrwd.h"
+#include "Vm/TypeCheck.h"
 
 class Value {
 public:

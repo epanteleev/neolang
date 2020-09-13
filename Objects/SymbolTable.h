@@ -1,8 +1,13 @@
 #pragma once
-#include <map>
 
-#include "ObjFrwd.h"
+#include <memory>
+
+#include "Objects/ObjFrwd.h"
+#include "Objects/ObjStringLiteral.h"
 
 typedef void (*NativeFunc)(Vm *obj);
 
-using SymbolTable = std::map<std::string, NativeFunc>;
+/**
+ * Map ObjStringLiteral to index in symbol table.
+ */
+using SymbolTable = std::vector<std::unique_ptr<ObjStringLiteral>>;

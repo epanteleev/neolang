@@ -1,17 +1,18 @@
 #include <iostream>
 #include <vector>
-#include <Vm.h>
+#include "Vm/Vm.h"
 #include <map>
-#include <ObjModule.h>
+#include <Objects/ObjModule.h>
+#include <Objects/SymbolTable.h>
 #include "Interpreter/Interpret.h"
-#include "Common.h"
-#include "ObjString.h"
-#include "ObjMethod.h"
+#include "Vm/Common.h"
+#include "Objects/ObjStringLiteral.h"
+#include "Objects/ObjMethod.h"
 
 static void println(Vm *vm) {
     Object *obj = vm->stack().pop().toObject();
-    if (obj->m_name == "ObjString") {
-        auto cstr = (ObjString *) obj;
+    if (obj->objectName() == "ObjStringLiteral") {
+        auto cstr = (ObjStringLiteral *) obj;
         printf("%s", cstr->str().data());
     } else {
         UNREACHABLE();
@@ -19,32 +20,36 @@ static void println(Vm *vm) {
 }
 
 int main() {
+    SymbolTable table;
+    table.push_back(ObjStringLiteral::make("add2and3"));
+    table.push_back(ObjStringLiteral::make("Adder"));
+    Vm vm;
 
-    std::vector<Instruction> inst = {
-            Instruction(OpCode::iPUSH, Value(2)),
-            Instruction(OpCode::iPUSH, Value(3)),
-            Instruction(OpCode::iADD),
-            Instruction(OpCode::iSTORE, Value(0)),
-            Instruction(OpCode::iPUSH, Value(3)),
-            Instruction(OpCode::iPUSH, ObjString::make("Hello World")),
-            Instruction(OpCode::CALL, ObjString::make("println"))
-    };
+    auto module = ObjModule::make("Adder");
 
-    SymbolTable symTable = {
-            {"println", println}
-    };
-
-    Vm vm(inst, symTable);
-    Interpret::apply(vm);
-    vm.trace();
-
-
-    auto method = ObjMethod::make("add");
+    auto method = ObjMethod::make(*module, "add2and3");
     method->addInst(Instruction(OpCode::iPUSH, Value(2)));
     method->addInst(Instruction(OpCode::iPUSH, Value(3)));
     method->addInst(Instruction(OpCode::iADD));
+    method->addInst(Instruction(OpCode::RET));
 
-    auto module = ObjModule::make();
     module->addMethod(method);
+
+    vm.addModule(module);
+
+    auto module1 = ObjModule::make("Main");
+    auto method1 = ObjMethod::make(*module1, "main");
+    method1->addInst(Instruction(OpCode::iPUSH, Value(7)));
+    method1->addInst(Instruction(OpCode::CALLSTATIC, Value(1), Value(0)));
+
+    module1->addMethod(method1);
+    module1->registerConstants(table);
+    vm.addModule(module1);
+    if(Interpret::apply("Main", vm)) {
+        vm.trace();
+    } else {
+        std::cout << "Abort" << std::endl;
+    }
+
     return 0;
 }

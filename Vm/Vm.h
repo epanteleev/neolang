@@ -5,53 +5,69 @@
 #include <array>
 #include <map>
 
-#include "Value.h"
-#include "ApiStack.h"
-#include "ObjMethod.h"
-#include "Instruction.h"
-#include "SymbolTable.h"
-#include "ObjModule.h"
+#include "Vm/Value.h"
+#include "Vm/ApiStack.h"
+#include "Objects/ObjMethod.h"
+#include "Vm/Instruction.h"
+#include "Objects/ObjModule.h"
+#include "Vm/Frame.h"
+
+#define TRACE(vm, condition, message)                                          \
+      do                                                                       \
+      {                                                                        \
+        if (!(condition))                                                      \
+        {                                                                      \
+          vm.vmError(message);                                                 \
+          vm.trace();                                                          \
+          return false;                                                              \
+        }                                                                      \
+      } while (false)
+
 
 class Vm {
 public:
     Vm() = default;
 
-    explicit Vm(std::vector<Instruction> inst, SymbolTable symTable) :
-            m_insts(std::move(inst)),
-            m_symTable(std::move(symTable)) {}
+    Vm(Vm &) = delete;
 
     ~Vm() = default;
+
+    inline void addModule(std::unique_ptr<ObjModule> &module) noexcept {
+        m_modules.addModule(module);
+    }
 
     inline ApiStack &stack() noexcept {
         return m_apiStack;
     }
 
-    Instruction currentInst() const;
-
-    inline bool hasNext() const noexcept {
-        return ip != m_insts.size();
+    inline Frame &frame() noexcept {
+        return m_callStack.top();
     }
 
-    inline void next() noexcept { ip++; }
+    inline CallStack &callStack() noexcept {
+        return m_callStack;
+    }
+
+    inline ModuleBuffer &modules() noexcept {
+        return m_modules;
+    }
 
     inline void store(Value val, size_t idx) noexcept {
         m_local[idx] = val;
     }
 
-    inline NativeFunc findFunc(const std::string &name) noexcept {
-        return m_symTable[name];
-    }
-
     void trace();
 
-private:
-    /// Virtual stack of virtual machine.
-    ApiStack m_apiStack;
-    ///
-    std::vector<Instruction> m_insts;
-    std::array<Value, 4> m_local;
-    SymbolTable m_symTable;
-    size_t ip{};
+    void vmError(const std::string &message) noexcept;
 
-    std::list<std::unique_ptr<ObjModule>> m_modules;
+    void perror(const std::string& basicString);
+
+private:
+    /** Virtual stack of virtual machine. */
+    ApiStack m_apiStack;
+    std::array<Value, 4> m_local;
+
+    CallStack m_callStack;
+    ModuleBuffer m_modules;
+
 };

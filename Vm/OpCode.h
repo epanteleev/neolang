@@ -13,6 +13,7 @@ enum class OpCode : uint8_t {
     fSUB,
     fMULT,
     fDIF,
-    CALL
+    CALLSTATIC,
+    RET
 };
 

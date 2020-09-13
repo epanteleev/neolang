@@ -2,5 +2,23 @@ cmake_minimum_required(VERSION 3.17)
 project(neolang)
 
 set(CMAKE_CXX_STANDARD 20)
-include_directories(Vm Objects)
-add_executable(neolang main.cpp Vm/Value.h Vm/OpCode.h Vm/Vm.cpp Vm/Vm.h Objects/ObjMethod.h Interpreter/Interpret.cpp Interpreter/Interpret.h Vm/ApiStack.h Vm/TypeCheck.h Vm/Instruction.h Vm/Common.h Vm/Context.cpp Vm/Context.h Objects/Object.cpp Objects/Object.h Objects/ObjString.h Objects/ObjFrwd.h Objects/SymbolTable.h Objects/ObjModule.cpp Objects/ObjModule.h Parser/Parser.cpp Parser/Parser.h)
+
+include_directories(.)
+
+file(GLOB OBJECTS_SOURCES Objects/*.cpp)
+file(GLOB OBJECTS_HEADERS Objects/*.h)
+
+file(GLOB INTERPRETER_SOURCES Interpreter/*.cpp)
+file(GLOB INTERPRETER_HEADERS Interpreter/*.h)
+
+file(GLOB VM_SOURCES Vm/*.cpp)
+file(GLOB VM_HEADERS Vm/*.h)
+
+file(GLOB MODULES_SOURCES Modules/*.cpp)
+file(GLOB MODULES_HEADERS Modules/*.h)
+
+add_executable(neolang main.cpp ${OBJECTS_SOURCES} ${OBJECTS_HEADERS}
+        ${INTERPRETER_SOURCES} ${INTERPRETER_HEADERS}
+        ${VM_SOURCES} ${VM_HEADERS}
+        ${MODULES_SOURCES} ${MODULES_HEADERS}
+    )
