@@ -14,61 +14,27 @@ public:
 
 class iAdd : public Interpret {
 public:
-    static bool apply(Vm &vm) noexcept {
-        const auto a = vm.stack().pop();
-        const auto b = vm.stack().pop();
-        const auto result = a.toInt32() + b.toInt32();
-        vm.stack().push(Value(result));
-        return true;
-    }
+    static bool apply(Vm &vm) noexcept;
 };
 
 class iSub : public Interpret {
 public:
-    static bool apply(Vm &vm) noexcept {
-        const auto a = vm.stack().pop();
-        const auto b = vm.stack().pop();
-        const auto result = a.toInt32() - b.toInt32();
-        vm.stack().push(Value(result));
-        return true;
-    }
+    static bool apply(Vm &vm) noexcept;
 };
 
 class iMult : public Interpret {
 public:
-    static bool apply(Vm &vm) noexcept {
-        const auto a = vm.stack().pop();
-        const auto b = vm.stack().pop();
-        const auto result = a.toInt32() * b.toInt32();
-        vm.stack().push(Value(result));
-        return true;
-    }
+    static bool apply(Vm &vm) noexcept;
 };
 
 class iPush : public Interpret {
 public:
-    static bool apply(Vm &vm) noexcept {
-        const auto inst = vm.frame().inst();
-        vm.stack().push(inst.arg0());
-        return true;
-    }
+    static bool apply(Vm &vm) noexcept;
 };
 
 class iStore : public Interpret {
 public:
-    static bool apply(Vm &vm) noexcept {
-        const auto instruction = vm.frame().inst();
-        const auto variable = instruction.arg0();
-        TRACE(vm, vm.stack().nonEmpty(), "ApiStack is empty.");
-        TRACE(vm, variable < 4, "Invalid variable index.");
-        const auto a = vm.stack().pop();
-        if (a.type() == Type::INT32) {
-            vm.store(a, variable.value());
-        } else {
-            TRACE(vm, false, "Incomparable type.");
-        }
-        return true;
-    }
+    static bool apply(Vm &vm) noexcept;
 };
 
 class CallStatic : public Interpret {
@@ -78,9 +44,15 @@ public:
 
 class Ret : public Interpret {
 public:
-    static bool apply(Vm &vm) noexcept {
-        TRACE(vm, !vm.callStack().empty(), "CallStack is empty.");
-        vm.callStack().pop();
-        return true;
-    }
+    static bool apply(Vm &vm) noexcept;
+};
+
+class Invoke : public Interpret {
+public:
+    static bool apply(Vm& vm) noexcept;
+};
+
+class New : public Interpret {
+public:
+    static bool apply(Vm& vm) noexcept;
 };

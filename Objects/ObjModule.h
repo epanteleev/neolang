@@ -33,19 +33,22 @@ public:
         m_constantStrings = std::move(strings);
     }
 
+    [[nodiscard]]
     inline ObjMethod* findMethod(const std::string &name) const noexcept {
         auto pred = [&](const std::unique_ptr<ObjMethod> &i) { return (*i).m_methodName == name; };
         return std::find_if(m_methods.begin(), m_methods.end(), pred)->get();
     }
 
+    [[nodiscard]]
     inline const ObjStringLiteral* findString(size_t idx) const noexcept {
-        if (m_constantStrings.size() > idx) {
+        if (m_constantStrings.size() <= idx) {
             return nullptr;
         } else {
             return m_constantStrings[idx].get();
         }
     }
 
+    [[nodiscard]]
     inline const std::string &moduleName() const noexcept {
         return objectName();
     }

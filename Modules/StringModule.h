@@ -1,22 +1,33 @@
 #pragma once
 
+#include <memory>
+#include <Objects/ObjMethod.h>
+#include <Objects/ObjNativeMethod.h>
 #include "Objects/ObjNativeModule.h"
 
 class StringModule final : public ObjNativeModule {
 public:
     StringModule() : ObjNativeModule("String") {}
 
-    void *newInstance(Vm &vm) noexcept override {
+    static void printType(Vm &vm) noexcept;
 
-    }
+    static void constr(Vm &vm) noexcept;
 
-    bool finalize(Vm &vm) noexcept override {
-        return false;
+public:
+    static std::unique_ptr<ObjNativeModule> makeModule() noexcept {
+        auto module = std::make_unique<StringModule>();
+
+        auto method = ObjNativeMethod::make(*module, "printType",
+                                            printType);
+        module->addMethod(method);
+
+        auto method1 = ObjNativeMethod::make(*module, "<new>", constr);
+        module->addMethod(method1);
+        return module;
     }
 };
 
-
 struct StringInstance {
     StringModule *rtti;
-    char ch[0];
+    std::string str;
 };

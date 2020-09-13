@@ -11,6 +11,7 @@ public:
 
     virtual ~Object() = default;
 
+    [[nodiscard]]
     inline virtual const std::string& objectName() const noexcept {
         return m_name;
     }

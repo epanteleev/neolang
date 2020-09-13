@@ -5,6 +5,7 @@
 #include <array>
 #include <map>
 
+#include <Objects/ObjNativeModule.h>
 #include "Vm/Value.h"
 #include "Vm/ApiStack.h"
 #include "Objects/ObjMethod.h"
@@ -19,7 +20,7 @@
         {                                                                      \
           vm.vmError(message);                                                 \
           vm.trace();                                                          \
-          return false;                                                              \
+          return false;                                                        \
         }                                                                      \
       } while (false)
 
@@ -36,6 +37,10 @@ public:
         m_modules.addModule(module);
     }
 
+    inline void addNative(std::unique_ptr<ObjNativeModule> &module) noexcept {
+        m_nativeModule.addModule(module);
+    }
+
     inline ApiStack &stack() noexcept {
         return m_apiStack;
     }
@@ -50,6 +55,10 @@ public:
 
     inline ModuleBuffer &modules() noexcept {
         return m_modules;
+    }
+
+    inline NativeModuleBuffer &nativeModules() noexcept {
+        return m_nativeModule;
     }
 
     inline void store(Value val, size_t idx) noexcept {
@@ -69,5 +78,5 @@ private:
 
     CallStack m_callStack;
     ModuleBuffer m_modules;
-
+    NativeModuleBuffer m_nativeModule;
 };
