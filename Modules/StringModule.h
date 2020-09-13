@@ -9,9 +9,9 @@ class StringModule final : public ObjNativeModule {
 public:
     StringModule() : ObjNativeModule("String") {}
 
-    static void printType(Vm &vm) noexcept;
+    static bool printType(Vm &vm) noexcept;
 
-    static void constr(Vm &vm) noexcept;
+    static bool constr(Vm &vm) noexcept;
 
 public:
     static std::unique_ptr<ObjNativeModule> makeModule() noexcept {

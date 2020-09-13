@@ -21,4 +21,4 @@ add_executable(neolang main.cpp ${OBJECTS_SOURCES} ${OBJECTS_HEADERS}
         ${INTERPRETER_SOURCES} ${INTERPRETER_HEADERS}
         ${VM_SOURCES} ${VM_HEADERS}
         ${MODULES_SOURCES} ${MODULES_HEADERS}
-        Objects/ObjNativeMethod.cpp Objects/ObjNativeMethod.h)
+    )

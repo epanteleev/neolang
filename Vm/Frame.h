@@ -7,28 +7,32 @@
 
 class Frame {
 public:
-    explicit Frame(ObjMethod& method) :
+    explicit Frame(ObjMethodBase& method) :
             m_method(method),
             m_ip(0) {}
 
+    [[nodiscard]]
     inline Instruction inst() const noexcept {
-        return m_method.insts()[m_ip];
+        ASSERT(!m_method.isNative(), "Try executed native method.");
+        return static_cast<ObjMethod&>(m_method).insts()[m_ip];
     }
 
+    [[nodiscard]]
     inline bool hasNext() const noexcept {
-        return m_ip != m_method.insts().size();
+        ASSERT(!m_method.isNative(), "Try executed native method.");
+        return m_ip != static_cast<ObjMethod&>(m_method).insts().size();
     }
 
     inline void next() noexcept {
         m_ip++;
     }
 
-    inline ObjMethod& method() noexcept {
+    inline ObjMethodBase& method() noexcept {
         return m_method;
     }
 
 private:
-    ObjMethod &m_method;
+    ObjMethodBase &m_method;
     size_t m_ip;
 };
 

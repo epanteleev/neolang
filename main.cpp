@@ -3,6 +3,7 @@
 #include "Vm/Vm.h"
 #include <Modules/StringModule.h>
 #include "Interpreter/Interpret.h"
+#include "Objects/ModuleBuffer.h"
 
 int main() {
     SymbolTable table;
@@ -34,7 +35,7 @@ int main() {
     module1->registerConstants(table);
     vm.addModule(module1);
     auto string = StringModule::makeModule();
-    vm.addNative(string);
+    vm.addModule(string);
     if(Interpret::apply("Main", vm)) {
         vm.trace();
     } else {

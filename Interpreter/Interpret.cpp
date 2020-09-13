@@ -18,19 +18,13 @@ static std::map<OpCode, Actions> handlers = {
 };
 
 static bool callMethod(Vm& vm, const std::string& moduleName, const std::string& methodName) noexcept {
-    ObjNativeMethod* nativeMethod = vm.nativeModules().findMethod(moduleName, methodName);
-    if (nativeMethod != nullptr) {
-        (*nativeMethod)(vm);
-    } else {
-        ObjMethod* method = vm.modules().findMethod(moduleName, methodName);
-        TRACE(vm, method != nullptr, "Unresolved method " + moduleName + "::" + methodName);
-        vm.callStack().push(Frame(*method));
-    }
-    return true;
+    ObjMethodBase* method = vm.modules().findMethod(moduleName, methodName);
+    TRACE(vm, method != nullptr, "Unresolved method " + moduleName + "::" + methodName);
+    return method->apply(vm);
 }
 
 bool Interpret::apply(const std::string& moduleName, Vm &vm) {
-    ObjMethod* method = vm.modules().findMethod(moduleName, "main");
+    ObjMethodBase* method = vm.modules().findMethod(moduleName, "main");
     vm.callStack().push(Frame(*method));
     while (true) {
         auto& frame = vm.frame();
@@ -48,7 +42,7 @@ bool Interpret::apply(const std::string& moduleName, Vm &vm) {
 bool Invoke::apply(Vm &vm) noexcept {
     Frame frame = vm.frame();
     Instruction inst = frame.inst();
-    const ObjModule& module = frame.method().module();
+    const ObjModule& module = static_cast<const ObjModule&>(frame.method().module());
 
     const std::string& moduleName = vm.stack().top().toObject()->objectName();
 
@@ -61,7 +55,7 @@ bool Invoke::apply(Vm &vm) noexcept {
 bool CallStatic::apply(Vm &vm) noexcept {
     Frame frame = vm.frame();
     Instruction inst = frame.inst();
-    const ObjModule& module = frame.method().module();
+    const ObjModule& module = static_cast<const ObjModule&>(frame.method().module());
 
     const ObjStringLiteral* moduleName = module.findString(inst.arg0().value());
     TRACE(vm, moduleName != nullptr, "No found module name.");
@@ -75,7 +69,7 @@ bool CallStatic::apply(Vm &vm) noexcept {
 bool New::apply(Vm &vm) noexcept {
     Frame frame = vm.frame();
     Instruction inst = frame.inst();
-    const ObjModule& module = frame.method().module();
+    const ObjModule& module = static_cast<const ObjModule&>(frame.method().module());
 
     const ObjStringLiteral* moduleName = module.findString(inst.arg0().value());
     TRACE(vm, moduleName != nullptr, "No found module name.");

@@ -6,6 +6,7 @@
 #include <map>
 
 #include <Objects/ObjNativeModule.h>
+#include <Objects/ModuleBuffer.h>
 #include "Vm/Value.h"
 #include "Vm/ApiStack.h"
 #include "Objects/ObjMethod.h"
@@ -34,13 +35,12 @@ public:
     ~Vm() = default;
 
     inline void addModule(std::unique_ptr<ObjModule> &module) noexcept {
-        m_modules.addModule(module);
+        m_modules.addModule(reinterpret_cast<std::unique_ptr<ObjModuleBase> &>(module));
     }
 
-    inline void addNative(std::unique_ptr<ObjNativeModule> &module) noexcept {
-        m_nativeModule.addModule(module);
+    inline void addModule(std::unique_ptr<ObjNativeModule> &module) noexcept {
+        m_modules.addModule(reinterpret_cast<std::unique_ptr<ObjModuleBase> &>(module));
     }
-
     inline ApiStack &stack() noexcept {
         return m_apiStack;
     }
@@ -55,10 +55,6 @@ public:
 
     inline ModuleBuffer &modules() noexcept {
         return m_modules;
-    }
-
-    inline NativeModuleBuffer &nativeModules() noexcept {
-        return m_nativeModule;
     }
 
     inline void store(Value val, size_t idx) noexcept {
@@ -78,5 +74,4 @@ private:
 
     CallStack m_callStack;
     ModuleBuffer m_modules;
-    NativeModuleBuffer m_nativeModule;
 };
