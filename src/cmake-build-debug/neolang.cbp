@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="neolang"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="D:/Slag/neolang/src/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="neolang">
+				<Option output="D:/Slag/neolang/build/bin/neolang.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/Slag/neolang/src/../build/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="D:/Slag/neolang/src/."/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++"/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++/backward"/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include"/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include"/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed"/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 neolang"/>
+					<CompileFile command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="neolang/fast">
+				<Option output="D:/Slag/neolang/build/bin/neolang.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/Slag/neolang/src/../build/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="D:/Slag/neolang/src/."/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++"/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++/backward"/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include"/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../include"/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/include-fixed"/>
+					<Add directory="D:/bin/TDM-GCC-64/bin/../lib/gcc/x86_64-w64-mingw32/9.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 neolang/fast"/>
+					<CompileFile command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="D:/Slag/neolang/src/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="D:/Slag/neolang/src/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/bin/TDM-GCC-64/bin/mingw32-make.exe -f &quot;D:/Slag/neolang/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="D:/Slag/neolang/src/Interpreter/Interpret.cpp">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Interpreter/Interpret.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Modules/BaseIO.cpp">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Modules/BaseIO.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Modules/StringModule.cpp">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Modules/StringModule.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/ModuleBuffer.cpp">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/ModuleBuffer.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/ObjFrwd.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/ObjMethod.cpp">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/ObjMethod.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/ObjMethodBase.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/ObjModule.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/ObjModuleBase.cpp">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/ObjModuleBase.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/ObjNativeMethod.cpp">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/ObjNativeMethod.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/ObjNativeModule.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/Object.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Objects/SymbolTable.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Parser/Parser.cpp">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Parser/Parser.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Parser/Reader.cpp">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Parser/Reader.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Vm/ApiStack.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Vm/Common.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Vm/Frame.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Vm/Instruction.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Vm/Type.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Vm/Value.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Vm/Vm.cpp">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/Vm/Vm.h">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/main.cpp">
+			<Option target="neolang"/>
+		</Unit>
+		<Unit filename="D:/Slag/neolang/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

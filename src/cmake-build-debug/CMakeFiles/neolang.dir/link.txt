@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2020.2\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\neolang.dir/objects.a
+D:\bin\TDM-GCC-64\bin\ar.exe cr CMakeFiles\neolang.dir/objects.a @CMakeFiles\neolang.dir\objects1.rsp
+D:\bin\TDM-GCC-64\bin\g++.exe -Wall -Wextra -g   -Wl,--whole-archive CMakeFiles\neolang.dir/objects.a -Wl,--no-whole-archive  -o D:\Slag\neolang\build\bin\neolang.exe -Wl,--out-implib,D:\Slag\neolang\build\lib\libneolang.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\neolang.dir\linklibs.rsp
