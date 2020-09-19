@@ -91,15 +91,16 @@ static bool parseModule(Vm &vm, Reader &reader) noexcept {
     return true;
 }
 
-Parser::Parser(const std::filesystem::path &path) noexcept:
-        m_reader(std::make_unique<Reader>()) {
-    m_reader->open(path.string());
-}
 
-std::unique_ptr<Vm> Parser::apply() noexcept {
-    auto vm = std::make_unique<Vm>();
-    if (!parseModule(*vm, *m_reader)) {
-        std::cout << "Parse error." << std::endl;
+bool Parser::parse(Vm& vm, const std::filesystem::path &path) noexcept {
+    Reader reader;
+    if (!reader.open(path.string())) {
+        std::cerr << "File " << path << " wasn't open." << std::endl;
+        return false;
     }
-    return vm;
+    if (!parseModule(vm, reader)) {
+        std::cerr << "Parse error." << std::endl;
+        return false;
+    }
+    return true;
 }

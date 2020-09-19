@@ -97,7 +97,7 @@ private:
     inline void removeSpace() noexcept;
 
 private:
-    std::string m_buffer;
-    size_t m_currPos;
-    ParseStatus m_match;
+    std::string m_buffer{};
+    size_t m_currPos{};
+    ParseStatus m_match{};
 };

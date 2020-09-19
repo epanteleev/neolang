@@ -134,6 +134,16 @@ memory
 Objects/ObjFrwd.h
 ../Objects/Objects/ObjFrwd.h
 
+../Parser/Parser.h
+memory
+-
+filesystem
+-
+Parser/Reader.h
+../Parser/Parser/Reader.h
+Vm/Vm.h
+../Parser/Vm/Vm.h
+
 ../Parser/Reader.h
 cstdint
 -
@@ -208,11 +218,17 @@ Objects/ObjModule.h
 Vm/Frame.h
 ../Vm/Vm/Frame.h
 
-D:/Slag/neolang/src/Interpreter/Interpret.cpp
-map
+D:/Slag/neolang/src/Parser/Parser.cpp
+iostream
 -
-Interpreter/Interpret.h
-D:/Slag/neolang/src/Interpreter/Interpreter/Interpret.h
+filesystem
+-
+Parser/Parser.h
+D:/Slag/neolang/src/Parser/Parser/Parser.h
+Vm/Vm.h
+D:/Slag/neolang/src/Parser/Vm/Vm.h
+Reader.h
+D:/Slag/neolang/src/Parser/Reader.h
 
 D:/Slag/neolang/src/Parser/Parser.h
 memory
@@ -223,6 +239,18 @@ Parser/Reader.h
 D:/Slag/neolang/src/Parser/Parser/Reader.h
 Vm/Vm.h
 D:/Slag/neolang/src/Parser/Vm/Vm.h
+
+D:/Slag/neolang/src/Parser/Reader.cpp
+fstream
+-
+Reader.h
+D:/Slag/neolang/src/Parser/Reader.h
+
+D:/Slag/neolang/src/Parser/Reader.h
+cstdint
+-
+string
+-
 
 D:/Slag/neolang/src/Vm/Vm.h
 stack

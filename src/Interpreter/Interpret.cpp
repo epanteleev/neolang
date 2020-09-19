@@ -60,6 +60,7 @@ VmResult Interpret::apply(const std::string& moduleName, Vm &vm) {
             CASE(fADD,       fAdd)
             CASE(fSUB,       fSub)
             CASE(fMULT,      fMult)
+            CASE(fPUSH,      fPush)
             CASE(RET,        Ret)
             CASE(INVOKE,     Invoke)
             CASE(CALLSTATIC, CallStatic)
@@ -129,12 +130,14 @@ APPLY(iStore) {
 
 APPLY(iPush) {
     const auto inst = vm.frame().inst();
+    TRACE(vm, inst.arg0().type() == Type::INT32, "Invalid type.");
     vm.stack().push(inst.arg0());
     return VmResult::SUCCESS;
 }
 
 APPLY(fPush) {
     const auto inst = vm.frame().inst();
+    TRACE(vm, inst.arg0().type() == Type::FLOAT32, "Invalid type.");
     vm.stack().push(inst.arg0());
     return VmResult::SUCCESS;
 }

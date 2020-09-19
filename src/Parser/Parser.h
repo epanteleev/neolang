@@ -7,10 +7,5 @@
 
 class Parser {
 public:
-    explicit Parser(const std::filesystem::path& path) noexcept;
-
-    std::unique_ptr<Vm> apply() noexcept;
-
-private:
-    std::unique_ptr<Reader> m_reader;
+    static bool parse(Vm &vm, const std::filesystem::path &path) noexcept;
 };
