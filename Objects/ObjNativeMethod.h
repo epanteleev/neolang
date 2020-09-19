@@ -8,7 +8,7 @@
 #include "Objects/ObjFrwd.h"
 #include "Objects/ObjMethodBase.h"
 
-using Native = std::function<bool(Vm &)>;
+using Native = std::function<VmResult(Vm &)>;
 
 class ObjNativeMethod : public ObjMethodBase {
 public:
@@ -25,7 +25,7 @@ public:
     ~ObjNativeMethod() override = default;
 
 public:
-    bool apply(Vm& vm) noexcept override;
+    VmResult apply(Vm& vm) noexcept override;
 
     [[nodiscard]]
     inline bool isNative() const noexcept override { return true; }

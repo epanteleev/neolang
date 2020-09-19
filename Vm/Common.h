@@ -30,3 +30,5 @@ constexpr void assertion(bool condition, const std::string& message) {
             __FILE__, __LINE__, __func__, message.data());
     std::terminate();
 }
+
+using ObjStringLiteral = std::string;

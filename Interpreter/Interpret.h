@@ -2,57 +2,33 @@
 
 #include "Vm/ApiStack.h"
 #include "Vm/Value.h"
-#include "Vm/TypeCheck.h"
+#include "Vm/Type.h"
 #include "Vm/Vm.h"
 #include "Vm/Instruction.h"
 #include "Vm/Common.h"
 
 class Interpret {
 public:
-    static bool apply(const std::string& moduleName, Vm &vm);
+    static VmResult apply(const std::string& moduleName, Vm &vm);
 };
 
-class iAdd : public Interpret {
-public:
-    static bool apply(Vm &vm) noexcept;
-};
+#define INTERPRET(opCode)                       \
+    class opCode : public Interpret {           \
+    public:                                     \
+        static VmResult apply(Vm &vm) noexcept; \
+    };                                          \
 
-class iSub : public Interpret {
-public:
-    static bool apply(Vm &vm) noexcept;
-};
-
-class iMult : public Interpret {
-public:
-    static bool apply(Vm &vm) noexcept;
-};
-
-class iPush : public Interpret {
-public:
-    static bool apply(Vm &vm) noexcept;
-};
-
-class iStore : public Interpret {
-public:
-    static bool apply(Vm &vm) noexcept;
-};
-
-class CallStatic : public Interpret {
-public:
-    static bool apply(Vm &vm) noexcept;
-};
-
-class Ret : public Interpret {
-public:
-    static bool apply(Vm &vm) noexcept;
-};
-
-class Invoke : public Interpret {
-public:
-    static bool apply(Vm& vm) noexcept;
-};
-
-class New : public Interpret {
-public:
-    static bool apply(Vm& vm) noexcept;
-};
+INTERPRET(iAdd)
+INTERPRET(iSub)
+INTERPRET(iMul)
+INTERPRET(iPush)
+INTERPRET(iDiv)
+INTERPRET(iStore)
+INTERPRET(CallStatic)
+INTERPRET(Ret)
+INTERPRET(Invoke)
+INTERPRET(New)
+INTERPRET(fAdd)
+INTERPRET(fSub)
+INTERPRET(fDiv)
+INTERPRET(fMult)

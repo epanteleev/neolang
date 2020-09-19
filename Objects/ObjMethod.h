@@ -16,16 +16,16 @@
 
 class ObjMethod : public ObjMethodBase {
 public:
-    explicit ObjMethod(const ObjModuleBase &module, const std::string &methodName) :
+    explicit ObjMethod(const ObjModuleBase &module, const ObjStringLiteral &methodName) :
             ObjMethodBase(module, "ObjMethod", methodName) {}
 
-    explicit ObjMethod(const ObjModuleBase &module, const std::string &name, InstList &instList) :
-            ObjMethodBase(module, "ObjMethod", name),
+    explicit ObjMethod(const ObjModuleBase &module, const ObjStringLiteral &methodName, InstList &instList) :
+            ObjMethodBase(module, "ObjMethod", methodName),
             m_instList(std::move(instList)) {}
 
 
     ObjMethod(ObjMethod &&method) noexcept:
-            ObjMethodBase(method.m_module, "ObjMethod", std::move(method.m_methodName)),
+            ObjMethodBase(method.m_module, "ObjMethod", method.m_methodName),
             m_instList(std::move(method.m_instList)) {}
 
     inline void addInst(Instruction inst) noexcept {
@@ -38,16 +38,11 @@ public:
     }
 
     [[nodiscard]]
-    inline const std::string &name() const noexcept {
-        return m_methodName;
-    }
-
-    [[nodiscard]]
     inline bool isNative() const noexcept override {
         return false;
     }
 
-    bool apply(Vm &vm) noexcept override;
+    VmResult apply(Vm &vm) noexcept override;
 
 public:
     static std::unique_ptr<ObjMethodBase> make(const ObjModuleBase &method,
@@ -56,12 +51,11 @@ public:
         return std::make_unique<ObjMethod>(method, name, instList);
     }
 
-    static std::unique_ptr<ObjMethod> make(const ObjModuleBase &method, const std::string &name) noexcept {
+    static std::unique_ptr<ObjMethod> make(const ObjModuleBase &method, const ObjStringLiteral &name) noexcept {
         return std::make_unique<ObjMethod>(method, name);
     }
 
 public:
-    std::string m_methodName;
     InstList m_instList;
 };
 

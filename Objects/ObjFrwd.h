@@ -1,5 +1,7 @@
 #pragma once
 
+enum class VmResult;
+
 class ObjModuleBase;
 class ObjNativeModule;
 class ObjMethodBase;
@@ -8,5 +10,4 @@ class ObjNativeMethod;
 class ObjNativeModule;
 class ObjModule;
 class Object;
-class ObjStringLiteral;
 class Vm;

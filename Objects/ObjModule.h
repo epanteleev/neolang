@@ -10,12 +10,12 @@
 
 class ObjModule final : public ObjModuleBase {
 public:
-    explicit ObjModule(const std::string &moduleName) : ObjModuleBase(moduleName) {}
+    explicit ObjModule(const ObjStringLiteral &moduleName) : ObjModuleBase(moduleName) {}
 
     ObjModule(ObjModule &) = delete;
     ~ObjModule() override = default;
 
-    inline void addField(const std::string &fieldName, Value defaultValue) noexcept {
+    inline void addField(const ObjStringLiteral &fieldName, Value defaultValue) noexcept {
         ASSERT(m_fields.find(fieldName) != m_fields.end(),
                "Field is exist yet...");
         m_fields.insert(std::make_pair(fieldName, defaultValue));
@@ -25,25 +25,33 @@ public:
         m_methods.push_back(std::move(method));
     }
 
-    inline void registerConstants(SymbolTable& strings) noexcept {
+    inline void registerConstants(StringBuffer& strings) noexcept {
         m_constantStrings = std::move(strings);
     }
 
+    inline void addStringConstant(std::string& str) noexcept {
+        m_constantStrings.push_back(std::move(str));
+    }
+
+    inline size_t sizeStringPool() const noexcept {
+        return m_constantStrings.size();
+    }
+
     [[nodiscard]]
-    inline const ObjStringLiteral* findString(size_t idx) const noexcept {
+    inline const ObjStringLiteral * findString(size_t idx) const noexcept {
         if (m_constantStrings.size() <= idx) {
             return nullptr;
         } else {
-            return m_constantStrings[idx].get();
+            return &m_constantStrings[idx];
         }
     }
 
 public:
-    static std::unique_ptr<ObjModule> make(const std::string &moduleName) noexcept {
+    static std::unique_ptr<ObjModule> make(const ObjStringLiteral &moduleName) noexcept {
         return std::move(std::make_unique<ObjModule>(moduleName));
     }
 
-public:
-    SymbolTable m_constantStrings{};
-    std::map<std::string, Value> m_fields{};
+public: // todo make private
+    StringBuffer m_constantStrings{};
+    std::map<ObjStringLiteral, Value> m_fields{};
 };

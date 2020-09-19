@@ -6,10 +6,10 @@
 
 class ObjModuleBase : public Object {
 public:
-    explicit ObjModuleBase(const std::string &moduleName) : Object(moduleName) {}
+    explicit ObjModuleBase(const ObjStringLiteral &moduleName) : Object(moduleName) {}
 
     [[nodiscard]]
-    ObjMethodBase* findMethod(const std::string &name) const noexcept;
+    ObjMethodBase* findMethod(const ObjStringLiteral &name) const noexcept;
 
     [[nodiscard]]
     inline const std::string &moduleName() const noexcept {

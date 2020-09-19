@@ -13,9 +13,8 @@ static const char* typeToString(Type type) noexcept {
 void Vm::trace() {
     fprintf(stderr, "[Vm trace]\n");
     fprintf(stderr, "[Api stack]\n");
-    while (m_apiStack.nonEmpty()) {
-        const auto value = m_apiStack.pop();
-        fprintf(stderr, "\t%lu:%s\n", value.value(), typeToString(value.type()));
+    for (auto& i : m_apiStack) {
+        fprintf(stderr, "\t%lu:%s\n", i.value(), typeToString(i.type()));
     }
     fprintf(stderr, "[Call stack]\n");
     while (!m_callStack.empty()) {

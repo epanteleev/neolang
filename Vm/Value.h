@@ -4,7 +4,7 @@
 #include <climits>
 
 #include "Objects/ObjFrwd.h"
-#include "Vm/TypeCheck.h"
+#include "Vm/Type.h"
 
 class Value {
 public:

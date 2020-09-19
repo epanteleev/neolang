@@ -20,5 +20,10 @@ file(GLOB MODULES_HEADERS Modules/*.h)
 add_executable(neolang main.cpp ${OBJECTS_SOURCES} ${OBJECTS_HEADERS}
         ${INTERPRETER_SOURCES} ${INTERPRETER_HEADERS}
         ${VM_SOURCES} ${VM_HEADERS}
+        ${MODULES_SOURCES} ${MODULES_HEADERS})
+
+add_executable(parser ${OBJECTS_SOURCES} ${OBJECTS_HEADERS}
+        ${INTERPRETER_SOURCES} ${INTERPRETER_HEADERS}
+        ${VM_SOURCES} ${VM_HEADERS}
         ${MODULES_SOURCES} ${MODULES_HEADERS}
-    )
+        Parser/Parser.cpp Parser/Parser.h Parser/main.cpp)

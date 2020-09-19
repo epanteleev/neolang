@@ -8,10 +8,11 @@
 
 class ObjMethodBase : public Object {
 public:
-    explicit ObjMethodBase(const ObjModuleBase &mModule, const std::string &className, std::string methodName) :
-            Object(className),
+    explicit ObjMethodBase(const ObjModuleBase &mModule, const ObjStringLiteral &moduleName,
+                           const ObjStringLiteral& methodName) :
+            Object(moduleName),
             m_module(mModule),
-            m_methodName(std::move(methodName)) {}
+            m_methodName(methodName) {}
 
     [[nodiscard]]
     inline const std::string &methodName() const noexcept {
@@ -19,16 +20,16 @@ public:
     }
 
     [[nodiscard]]
-    inline const ObjModuleBase& module() const noexcept {
+    inline const ObjModuleBase &module() const noexcept {
         return m_module;
     }
 
     [[nodiscard]]
     virtual bool isNative() const noexcept = 0;
 
-    virtual bool apply(Vm &vm) noexcept = 0;
+    virtual VmResult apply(Vm &vm) noexcept = 0;
 
 protected:
     const ObjModuleBase &m_module;
-    std::string m_methodName;
+    ObjStringLiteral m_methodName;
 };

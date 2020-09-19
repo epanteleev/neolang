@@ -2,10 +2,11 @@
 
 #include <string>
 #include "Objects/ObjFrwd.h"
+#include "Vm/Common.h"
 
 class Object {
 public:
-    explicit Object(std::string className) :
+    explicit Object(ObjStringLiteral className) :
         m_name(std::move(className))
     {}
 
@@ -17,5 +18,5 @@ public:
     }
 
 private:
-    std::string m_name;
+    ObjStringLiteral m_name;
 };

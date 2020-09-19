@@ -21,10 +21,14 @@
         {                                                                      \
           vm.vmError(message);                                                 \
           vm.trace();                                                          \
-          return false;                                                        \
+          return VmResult::TERMINATE;                                                        \
         }                                                                      \
       } while (false)
 
+enum class VmResult {
+    SUCCESS,
+    TERMINATE
+};
 
 class Vm {
 public:
@@ -41,6 +45,7 @@ public:
     inline void addModule(std::unique_ptr<ObjNativeModule> &module) noexcept {
         m_modules.addModule(reinterpret_cast<std::unique_ptr<ObjModuleBase> &>(module));
     }
+
     inline ApiStack &stack() noexcept {
         return m_apiStack;
     }

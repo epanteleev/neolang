@@ -1,8 +1,6 @@
 #include "Objects/ObjModuleBase.h"
 #include "Objects/ObjMethodBase.h"
 #include "Objects/ObjNativeMethod.h"
-#include "Objects/ObjMethod.h"
-
 
 ObjMethodBase *ObjModuleBase::findMethod(const std::string &name) const noexcept {
     auto pred = [&](const std::unique_ptr<ObjMethodBase> &i) { return (*i).methodName() == name; };

@@ -1,23 +1,37 @@
 #pragma once
 
+#include <vector>
+
 #include "Value.h"
 
 enum class OpCode : uint8_t {
     iADD,
     iSUB,
-    iMULT,
-    iDIF,
+    iMUL,
+    iDIV,
     iPUSH,
     iSTORE,
     fADD,
     fSUB,
     fMULT,
-    fDIF,
+    fDIV,
     CALLSTATIC,
     INVOKE,
     NEW,
     RET
 };
+
+constexpr const char *iADD = "iADD";
+constexpr const char *iSUB = "iSUB";
+constexpr const char *iMUL = "iMUL";
+constexpr const char *iDIV = "iDIV";
+constexpr const char *iPUSH = "iPUSH";
+constexpr const char *iSTORE = "iSTORE";
+constexpr const char *fADD = "fADD";
+constexpr const char *fSUB = "fSUB";
+constexpr const char *fMUL = "fMUL";
+constexpr const char *CALLSTATIC = "CALLSTATIC";
+constexpr const char *RET = "RET";
 
 struct Instruction {
     explicit Instruction(OpCode code, Value val0, Value val1) :

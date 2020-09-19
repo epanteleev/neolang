@@ -1,16 +1,15 @@
 #include <iostream>
 
 #include "Vm/Vm.h"
-#include <Modules/StringModule.h>
+#include "Modules/StringModule.h"
 #include "Interpreter/Interpret.h"
-#include "Objects/ModuleBuffer.h"
 
 int main() {
-    SymbolTable table;
-    table.push_back(ObjStringLiteral::make("add2and3"));
-    table.push_back(ObjStringLiteral::make("Adder"));
-    table.push_back(ObjStringLiteral::make("printType"));
-    table.push_back(ObjStringLiteral::make("String"));
+    StringBuffer table;
+    table.push_back("add2and3");
+    table.push_back("Adder");
+    table.push_back("printType");
+    table.push_back("String");
     Vm vm;
 
     auto module = ObjModule::make("Adder");
@@ -36,7 +35,7 @@ int main() {
     vm.addModule(module1);
     auto string = StringModule::makeModule();
     vm.addModule(string);
-    if(Interpret::apply("Main", vm)) {
+    if(Interpret::apply("Main", vm) == VmResult::SUCCESS) {
         vm.trace();
     } else {
         std::cout << "Abort" << std::endl;
