@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstdint>
+#include <cstring>
 
 struct FlatString {
     size_t rtti;

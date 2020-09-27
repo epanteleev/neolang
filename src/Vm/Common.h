@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdio>
+#include <cstdlib>
 
 #define ASSERT(condition, message)                                             \
       do                                                                       \
