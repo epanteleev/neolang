@@ -14,10 +14,12 @@ public:
 
     static VmResult printFloat(Vm& vm) noexcept;
 
+    static VmResult printString(Vm& vm) noexcept;
+
     static VmResult readInt(Vm& vm) noexcept;
 
     static VmResult readFloat(Vm& vm) noexcept;
+
 public:
     static std::unique_ptr<ObjNativeModule> makeModule() noexcept;
-
 };

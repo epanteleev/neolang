@@ -4,19 +4,23 @@
 #include <memory>
 #include "Objects/Object.h"
 
+/**
+ * Base class for all module classes.
+ * @author minium2
+ */
 class ObjModuleBase : public Object {
 public:
-    explicit ObjModuleBase(const String &moduleName) : Object(moduleName) {}
+    explicit ObjModuleBase(const ObjString &moduleName) : Object(moduleName) {}
 
     ObjModuleBase(ObjModuleBase&& module) noexcept :
         Object(module.moduleName()),
         m_methods(std::move(module.m_methods)) {}
 
     [[nodiscard]]
-    ObjMethodBase* findMethod(const String &name) const noexcept;
+    ObjMethodBase* findMethod(const ObjString &name) const noexcept;
 
     [[nodiscard]]
-    inline const std::string &moduleName() const noexcept {
+    inline const ObjString &moduleName() const noexcept {
         return objectName();
     }
 

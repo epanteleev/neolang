@@ -1,22 +1,25 @@
 #pragma once
 
-#include <string>
 #include "Objects/ObjFrwd.h"
-#include "Vm/Common.h"
+#include "Objects/ObjString.h"
 
+/**
+ * Base class for all virtual machine represent classes.
+ * @author minium2
+ */
 class Object {
 public:
-    explicit Object(String className) :
+    explicit Object(ObjString className) :
         m_name(std::move(className))
     {}
 
     virtual ~Object() = default;
 
     [[nodiscard]]
-    inline virtual const std::string& objectName() const noexcept {
+    inline virtual const ObjString& objectName() const noexcept {
         return m_name;
     }
 
 private:
-    String m_name;
+    ObjString m_name;
 };

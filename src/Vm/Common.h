@@ -1,8 +1,6 @@
 #pragma once
 
-
 #include <cstdio>
-#include <string>
 
 #define ASSERT(condition, message)                                             \
       do                                                                       \
@@ -24,11 +22,13 @@
     abort();                                                               \
     } while (false)
 
-constexpr void assertion(bool condition, const std::string& message) {
-    if (condition) return;
-    fprintf(stderr, "[%s:%d] Assert failed in %s(): %s\n",
-            __FILE__, __LINE__, __func__, message.data());
-    std::terminate();
-}
-
-using String = std::string;
+#define ASSERT_TRUE(condition)                                                 \
+      do                                                                       \
+      {                                                                        \
+        if (!(condition))                                                      \
+        {                                                                      \
+          fprintf(stderr, "[%s:%d] Assert failed %s in %s() function\n",       \
+              __FILE__, __LINE__, #condition, __func__);                       \
+          abort();                                                             \
+        }                                                                      \
+      } while (false)

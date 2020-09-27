@@ -1,8 +1,10 @@
-#include <Interpreter/Interpret.h>
+#include "Interpreter/Interpret.h"
 #include <iostream>
-#include <Modules/BaseIO.h>
+#include <Vm/Allocator/Collector.h>
+
+#include "Modules/BaseIO.h"
+#include "Modules/StringModule.h"
 #include "Parser/Parser.h"
-#include "Vm/Vm.h"
 
 
 int main(int argv, char** args) {
@@ -17,9 +19,13 @@ int main(int argv, char** args) {
     }
     auto module = BaseIO::makeModule();
     vm.addModule(module);
-    if(Interpret::apply(file.stem().string(), vm) != VmResult::SUCCESS) {
+    auto stringModule = StringModule::makeModule();
+    vm.addModule(stringModule);
+    if(Interpret::apply(file.stem().string().data(), vm) != VmResult::SUCCESS) {
         vm.trace();
         return 1;
     }
+    Collector collector(vm.stack(), vm.locals());
+    collector.collect();
     return 0;
 }

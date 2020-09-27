@@ -1,3 +1,4 @@
+#!/bin/bash
 
 NEOLANG_EXE="./build/bin/neolang.exe"
 
@@ -9,7 +10,7 @@ function runtest() {
     echo -e "${GREEN}[START]: $1"
 	result=$($NEOLANG_EXE $1)
 
-	if [[ "$result" -eq "$2" ]] 
+	if [[ "$result" == "$2" ]] 
 	then
   		echo -e "\t${GREEN}[SUCCESS]${RESET}"
 	else
@@ -20,6 +21,10 @@ function runtest() {
 }
 
 runtest funtest/AddInt.nl 5
-runtest funtest/AddFloat.nl 5
+runtest funtest/PrintString.nl "HelloWorld"
+runtest funtest/AddFloat.nl 59
+runtest funtest/CMPTest.nl "Hello"
+runtest funtest/ConcatString.nl "HelloWorld"
+
 
 

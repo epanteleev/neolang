@@ -3,44 +3,25 @@
 #include <stack>
 #include <vector>
 #include <array>
-#include <map>
 
-#include <Objects/ObjNativeModule.h>
-#include <Objects/ModuleBuffer.h>
-#include "Vm/Value.h"
-#include "Vm/ApiStack.h"
+#include "Objects/ObjNativeModule.h"
+#include "Objects/ModuleBuffer.h"
 #include "Objects/ObjMethod.h"
-#include "Vm/Instruction.h"
 #include "Objects/ObjModule.h"
+
+#include "Vm/Allocator/Allocator.h"
+#include "Vm/Instruction.h"
+#include "Vm/ApiStack.h"
+#include "Vm/Value.h"
 #include "Vm/Frame.h"
-
-#define TRACE(vm, condition, message)                                          \
-      do                                                                       \
-      {                                                                        \
-        if (!(condition))                                                      \
-        {                                                                      \
-          vm.vmError(message);                                                 \
-          vm.trace();                                                          \
-          return VmResult::TERMINATE;                                                        \
-        }                                                                      \
-      } while (false)
-
-#define ZERO_DIVISION(vm, condition)                                          \
-      do                                                                       \
-      {                                                                        \
-        if (!(condition))                                                      \
-        {                                                                      \
-          vm.vmError("Zero division.");                                                 \
-          vm.trace();                                                          \
-          return VmResult::ZERO_DIVISION;                                                        \
-        }                                                                      \
-      } while (false)
 
 enum class VmResult {
     SUCCESS,
     TERMINATE,
     ZERO_DIVISION
 };
+static constexpr size_t MAX_LOCAL_VARS = 4;
+using Locals = std::array<Value, MAX_LOCAL_VARS>;
 
 class Vm {
 public:
@@ -64,6 +45,10 @@ public:
         return m_apiStack;
     }
 
+    inline Locals &locals() noexcept {
+        return m_local;
+    }
+
     inline Frame &frame() noexcept {
         return m_callStack.top();
     }
@@ -76,7 +61,9 @@ public:
         return m_modules;
     }
 
+public:
     inline void store(Value val, size_t idx) noexcept {
+        ASSERT(idx < MAX_LOCAL_VARS, "Invalid variable index.");
         m_local[idx] = val;
     }
 
@@ -90,22 +77,17 @@ public:
         ASSERT(!m_callStack.empty(), "CallStack is empty.");
         const auto frame = m_callStack.top();
         m_callStack.pop();
-        m_apiStack.drop(frame.savedSp());
+        ASSERT(m_apiStack.size() == frame.savedSp(), "Frame non empty.");
     }
 
     void trace();
 
-    void vmError(const std::string &message) noexcept;
-
-    void perror(const std::string& basicString);
-
-public:
-    static constexpr size_t MAX_LOCAL_VARS = 4;
+    void vmError(const ObjString &message) noexcept;
 
 private:
     /** Virtual stack of virtual machine. */
     ApiStack m_apiStack;
-    std::array<Value, MAX_LOCAL_VARS> m_local;
+    Locals m_local;
 
     CallStack m_callStack;
     ModuleBuffer m_modules;

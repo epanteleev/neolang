@@ -1,3 +1,0 @@
-D:/Slag/neolang/src/cmake-build-debug/CMakeFiles/neolang.dir
-D:/Slag/neolang/src/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/Slag/neolang/src/cmake-build-debug/CMakeFiles/rebuild_cache.dir

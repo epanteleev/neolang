@@ -8,8 +8,8 @@
 
 class ObjMethodBase : public Object {
 public:
-    explicit ObjMethodBase(const ObjModuleBase &mModule, const String &moduleName,
-                           String  methodName) :
+    explicit ObjMethodBase(const ObjModuleBase &mModule, const ObjString &moduleName,
+                           ObjString  methodName) :
             Object(moduleName),
             m_module(mModule),
             m_methodName(std::move(methodName)) {}
@@ -20,7 +20,7 @@ public:
             m_methodName(std::move(method.m_methodName)) {}
 
     [[nodiscard]]
-    inline const String &methodName() const noexcept {
+    inline const ObjString &methodName() const noexcept {
         return m_methodName;
     }
 
@@ -36,5 +36,5 @@ public:
 
 protected:
     const ObjModuleBase &m_module;
-    String m_methodName;
+    ObjString m_methodName;
 };

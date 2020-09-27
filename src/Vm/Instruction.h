@@ -2,41 +2,8 @@
 
 #include <vector>
 
-#include "Value.h"
-
-enum class OpCode : uint8_t {
-    iADD,
-    iSUB,
-    iMUL,
-    iDIV,
-    iPUSH,
-    iSTORE,
-    iLOAD,
-    fADD,
-    fSUB,
-    fMULT,
-    fDIV,
-    fPUSH,
-    fSTORE,
-    fLOAD,
-    CALLSTATIC,
-    INVOKE,
-    NEW,
-    RET
-};
-
-constexpr const char *iADD = "iADD";
-constexpr const char *iSUB = "iSUB";
-constexpr const char *iMUL = "iMUL";
-constexpr const char *iDIV = "iDIV";
-constexpr const char *iPUSH = "iPUSH";
-constexpr const char *iSTORE = "iSTORE";
-constexpr const char *fADD = "fADD";
-constexpr const char *fSUB = "fSUB";
-constexpr const char *fMUL = "fMUL";
-constexpr const char *CALLSTATIC = "CALLSTATIC";
-constexpr const char *RET = "RET";
-constexpr const char *iLOAD = "iLOAD";
+#include "Vm/Value.h"
+#include "Vm/OpCode.h"
 
 struct Instruction {
     explicit Instruction(OpCode code, Value val0, Value val1) :
@@ -54,6 +21,9 @@ struct Instruction {
             m_arg0(Value()),
             m_arg1(Value()) {}
 
+    Instruction& operator=(const Instruction& inst) noexcept = default;
+
+public:
     [[nodiscard]]
     inline OpCode code() const noexcept {
         return m_opCode;

@@ -29,6 +29,13 @@ VmResult BaseIO::readFloat(Vm &vm) noexcept {
     return VmResult::SUCCESS;
 }
 
+VmResult BaseIO::printString(Vm &vm) noexcept {
+    auto value = vm.load(0);
+    ObjStringViewer ptr(value);
+    std::cout << ptr;
+    return VmResult::SUCCESS;
+}
+
 std::unique_ptr<ObjNativeModule> BaseIO::makeModule() noexcept {
     auto module = std::make_unique<BaseIO>();
 
@@ -43,5 +50,8 @@ std::unique_ptr<ObjNativeModule> BaseIO::makeModule() noexcept {
 
     auto method3 = ObjNativeMethod::make(*module, "readFloat", readFloat);
     module->addMethod(method3);
+
+    auto method4 = ObjNativeMethod::make(*module, "printString", printString);
+    module->addMethod(method4);
     return module;
 }

@@ -29,6 +29,7 @@ static constexpr KeywordEntry entries[] = {
         {Keyword::CLASS,  "class"}
 };
 
+// Todo: Change std::string to ObjString.
 class Reader final {
 public:
     enum class ParseStatus: uint8_t {
@@ -45,6 +46,10 @@ public:
     Reader(Reader &) = delete;
 
 public:
+    /**
+     * Open (@param fileName)
+     * @return false if file wasn't open.
+     */
     bool open(const std::string &fileName) noexcept;
 
     inline char getChar() noexcept {
@@ -64,7 +69,10 @@ public:
         return std::stoi(getWord());
     }
 
-    bool match(Keyword keyword) noexcept;
+    [[nodiscard]]
+    inline uint64_t getULong() noexcept {
+        return std::stoull(getWord());
+    }
 
     Reader& expect(const Keyword &keyword) noexcept;
 
@@ -84,8 +92,15 @@ public:
     inline bool error() const noexcept {
         return m_match == ParseStatus::ERROR;
     }
+    inline void reset() noexcept {
+        if (m_match == ParseStatus::NO_MATCH) {
+            m_match = ParseStatus::SUCCESS;
+        }
+    }
 
 private:
+    bool match(Keyword keyword) noexcept;
+
     inline void ungetChar() noexcept {
         m_currPos--;
     }

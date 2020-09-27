@@ -9,6 +9,7 @@
 
 /**
  * Represent buffer of modules.
+ * @author minium2
  */
 class ModuleBuffer final {
 public:
@@ -23,13 +24,13 @@ public:
      * Find module by module name.
      * @return nullptr if module wasn't found.
      */
-    ObjModuleBase *findModule(const std::string &moduleName) noexcept;
+    ObjModuleBase *findModule(const ObjString &moduleName) noexcept;
 
     /**
      * Find method by module and method names.
      * @return nullptr if method wasn't found.
      */
-    ObjMethodBase *findMethod(const std::string &moduleName, const std::string &name) noexcept;
+    ObjMethodBase *findMethod(const ObjString &moduleName, const ObjString &name) noexcept;
 
     inline void addModule(std::unique_ptr<ObjNativeModule> &module) noexcept {
         m_modules.push_back(std::move(module));

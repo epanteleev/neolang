@@ -5,39 +5,41 @@
 
 #include "Objects/Object.h"
 #include "Objects/ObjMethod.h"
-#include "Objects/SymbolTable.h"
+#include "Objects/StringBuffer.h"
 #include "Objects/ObjModuleBase.h"
 
+/**
+ * Represent module of programming language.
+ * @author minium2
+ */
 class ObjModule final : public ObjModuleBase {
 public:
-    explicit ObjModule(const String &moduleName) : ObjModuleBase(moduleName) {}
+    explicit ObjModule(const ObjString &moduleName) : ObjModuleBase(moduleName) {}
 
     ObjModule(ObjModule &&module) noexcept:
             ObjModuleBase(module.moduleName()),
-            m_constantStrings(std::move(module.m_constantStrings)),
-            m_fields(std::move(module.m_fields)) {}
+            m_constantStrings(std::move(module.m_constantStrings)) {}
 
     ObjModule(ObjModule &) = delete;
 
     ~ObjModule() override = default;
 
 public:
-    inline void addField(const String &fieldName, Value defaultValue) noexcept {
-        ASSERT(m_fields.find(fieldName) != m_fields.end(),
-               "Field is exist yet...");
-        m_fields.insert(std::make_pair(fieldName, defaultValue));
-    }
 
     inline void addMethod(std::unique_ptr<ObjMethod> &method) noexcept {
         m_methods.push_back(std::move(method));
     }
 
-    inline void registerConstants(StringBuffer &strings) noexcept {
+    inline void addConstants(StringBuffer &strings) noexcept {
         m_constantStrings = std::move(strings);
     }
-
-    inline void addStringConstant(std::string &str) noexcept {
+    /**
+     * Insert given str to string pull.
+     * @return position str in string buffer.
+     */
+    inline size_t addStringConstant(ObjString &str) noexcept {
         m_constantStrings.push_back(std::move(str));
+        return m_constantStrings.size() - 1;
     }
 
     [[nodiscard]]
@@ -46,7 +48,7 @@ public:
     }
 
     [[nodiscard]]
-    inline const String *findString(size_t idx) const noexcept {
+    inline const ObjString *findString(size_t idx) const noexcept {
         if (m_constantStrings.size() <= idx) {
             return nullptr;
         } else {
@@ -55,11 +57,10 @@ public:
     }
 
 public:
-    static std::unique_ptr<ObjModule> make(const String &moduleName) noexcept {
+    static std::unique_ptr<ObjModule> make(const ObjString &moduleName) noexcept {
         return std::make_unique<ObjModule>(moduleName);
     }
 
 private:
     StringBuffer m_constantStrings{};
-    std::map<String, Value> m_fields{};
 };

@@ -3,7 +3,6 @@
 #include <array>
 #include "Vm/Value.h"
 
-
 class ApiStack final {
 private:
     static constexpr size_t MAX_STACK_SIZE = 64;
@@ -50,11 +49,11 @@ public:
     }
 
     inline Value* begin() noexcept {
-        return m_stack.begin();
+        return &m_stack[0];
     }
 
     inline Value* end() noexcept {
-        return m_stack.begin() + m_sp;
+        return &m_stack[m_sp];
     }
 
 private:

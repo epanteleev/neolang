@@ -11,17 +11,15 @@ public:
 
     static VmResult printType(Vm &vm) noexcept;
 
-    static VmResult newString(Vm &vm) noexcept;
+    static VmResult concat(Vm& vm) noexcept;
 
 public:
     static std::unique_ptr<ObjNativeModule> makeModule() noexcept {
         auto module = std::make_unique<StringModule>();
 
-        auto method = ObjNativeMethod::make(*module, "printType", printType);
+        auto method = ObjNativeMethod::make(*module, "concat", concat);
         module->addMethod(method);
 
-        auto method1 = ObjNativeMethod::make(*module, "<new>", newString);
-        module->addMethod(method1);
         return module;
     }
 };

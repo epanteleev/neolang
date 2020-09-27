@@ -4,7 +4,12 @@ class AddFloat {
 		fPUSH 3
 		fSTORE 0
 		fSTORE 1
-		CALLSTATIC AddFloat::add	
+		CALLSTATIC AddFloat::add
+		fPUSH 4
+		fADD
+		fSTORE 0 
+		CALLSTATIC Io::printFloat
+		RET	
 	}
 
 	def add = {
@@ -13,6 +18,7 @@ class AddFloat {
 		fADD
 		fSTORE 0
 		CALLSTATIC Io::printFloat
-		RET
+		fLOAD 0
+		fRET
 	}
 }

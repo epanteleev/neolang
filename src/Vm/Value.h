@@ -28,25 +28,30 @@ public:
             m_value(val),
             m_type(Type::FLOAT64) {}
 
-    Value(uintptr_t ref) :
+    explicit Value(uintptr_t ref) :
             m_value(ref),
             m_type(Type::REF) {}
 
+    [[nodiscard]]
     constexpr Type type() const noexcept { return m_type; }
 
+    [[nodiscard]]
     constexpr uint64_t value() const noexcept { return m_value; }
 
 public: // Conversions.
+    [[nodiscard]]
     inline constexpr int toInt32() const noexcept {
         ASSERT(m_type == Type::INT32, "Invalid cast.");
         return (int) (m_value);
     }
 
+    [[nodiscard]]
     inline constexpr float toFloat32() const noexcept {
         ASSERT(m_type == Type::FLOAT32, "Invalid cast.");
         return (float) (m_value);
     }
 
+    [[nodiscard]]
     inline Object *toObject() const noexcept {
         ASSERT(m_type == Type::REF, "Invalid cast to reference.");
         return (Object *) ((uintptr_t) m_value);
@@ -69,9 +74,7 @@ public:
         return m_type == Type::INT32 && m_value < value;
     }
 
-
 private:
-
     uint64_t m_value;
     Type m_type;
 };

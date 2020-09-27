@@ -4,7 +4,8 @@ class AddInt {
 		iPUSH 3
 		iSTORE 0
 		iSTORE 1
-		CALLSTATIC AddInt::add	
+		CALLSTATIC AddInt::add
+		RET	
 	}
 
 	def add = {

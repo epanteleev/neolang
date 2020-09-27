@@ -1,18 +1,22 @@
 #pragma once
 
-
 #include <functional>
 #include <memory>
 #include <utility>
+
 #include "Objects/Object.h"
-#include "Objects/ObjFrwd.h"
 #include "Objects/ObjMethodBase.h"
 
 using Native = std::function<VmResult(Vm &)>;
 
+/**
+ * Represent native method of programming language.
+ * To create a new module, you need to inherit.
+ * @author minium2
+ */
 class ObjNativeMethod : public ObjMethodBase {
 public:
-    explicit ObjNativeMethod(const ObjModuleBase &module, const std::string& moduleName, Native &func) :
+    explicit ObjNativeMethod(const ObjModuleBase &module, const ObjString& moduleName, Native &func) :
             ObjMethodBase(module, "ObjNativeMethod", moduleName),
             m_func(std::move(func)) {}
 
@@ -31,7 +35,7 @@ public:
     inline bool isNative() const noexcept override { return true; }
 
 public:
-    inline static std::unique_ptr<ObjNativeMethod> make(const ObjModuleBase &module, const std::string &moduleName, Native func) noexcept {
+    inline static std::unique_ptr<ObjNativeMethod> make(const ObjModuleBase &module, const ObjString &moduleName, Native func) noexcept {
         return std::make_unique<ObjNativeMethod>(module, moduleName, func);
     }
 

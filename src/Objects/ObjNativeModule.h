@@ -8,7 +8,7 @@
 
 class ObjNativeModule : public ObjModuleBase {
 public:
-    explicit ObjNativeModule(const std::string &className) :
+    explicit ObjNativeModule(const ObjString &className) :
             ObjModuleBase(className) {}
 
     ObjNativeModule(ObjNativeModule &&module) noexcept:
