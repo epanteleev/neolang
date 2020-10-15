@@ -14,7 +14,7 @@
  */
 class ObjModule final : public ObjModuleBase {
 public:
-    explicit ObjModule(const ObjString &moduleName) : ObjModuleBase(moduleName) {}
+    explicit ObjModule(ObjString moduleName) : ObjModuleBase(std::move(moduleName)) {}
 
     ObjModule(ObjModule &&module) noexcept:
             ObjModuleBase(module.moduleName()),
@@ -57,8 +57,8 @@ public:
     }
 
 public:
-    static std::unique_ptr<ObjModule> make(const ObjString &moduleName) noexcept {
-        return std::make_unique<ObjModule>(moduleName);
+    static std::unique_ptr<ObjModule> make(ObjString moduleName) noexcept {
+        return std::make_unique<ObjModule>(std::move(moduleName));
     }
 
 private:

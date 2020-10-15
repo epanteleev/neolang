@@ -1,34 +1,32 @@
 #pragma once
-
-#include <cstdint>
-#include <climits>
+#include <limits>
 
 #include "Objects/ObjFrwd.h"
 #include "Vm/Type.h"
 
 class Value {
 public:
-    explicit Value() :
-            m_value(INT_MIN),
+    constexpr explicit Value() :
+            m_value(std::numeric_limits<uint64_t>::min()),
             m_type(Type::UNDEFINED) {}
 
-    explicit Value(uint64_t value, Type type) :
+    constexpr explicit Value(uint64_t value, Type type) :
             m_value(value),
             m_type(type) {}
 
-    explicit Value(int val) :
+    constexpr explicit Value(int val) :
             m_value(val),
             m_type(Type::INT32) {}
 
-    explicit Value(float val) :
+    constexpr explicit Value(float val) :
             m_value(val),
             m_type(Type::FLOAT32) {}
 
-    explicit Value(double val) :
+    constexpr explicit Value(double val) :
             m_value(val),
             m_type(Type::FLOAT64) {}
 
-    explicit Value(uintptr_t ref) :
+    constexpr explicit Value(uintptr_t ref) :
             m_value(ref),
             m_type(Type::REF) {}
 
@@ -40,9 +38,15 @@ public:
 
 public: // Conversions.
     [[nodiscard]]
-    inline constexpr int toInt32() const noexcept {
+    inline constexpr int32_t toInt32() const noexcept {
         ASSERT(m_type == Type::INT32, "Invalid cast.");
-        return (int) (m_value);
+        return (int32_t) (m_value);
+    }
+
+    [[nodiscard]]
+    inline constexpr uint64_t toUint64() const noexcept {
+        ASSERT(m_type == Type::UINT64, "Invalid cast.");
+        return (uint64_t) (m_value);
     }
 
     [[nodiscard]]
@@ -52,26 +56,33 @@ public: // Conversions.
     }
 
     [[nodiscard]]
-    inline Object *toObject() const noexcept {
+    inline constexpr double toFloat64() const noexcept {
+        ASSERT(m_type == Type::FLOAT64, "Invalid cast.");
+        return (double) (m_value);
+    }
+
+    [[nodiscard]]
+    inline constexpr void *toPtr() const noexcept {
         ASSERT(m_type == Type::REF, "Invalid cast to reference.");
-        return (Object *) ((uintptr_t) m_value);
+        return reinterpret_cast<void *>(m_value);
     }
 
 public:
-    inline bool operator==(const Value &value) const noexcept {
+    inline constexpr bool operator==(const Value &value) const noexcept {
+        //Bug: Compare floating point value.
         return m_type == value.m_type && m_value == value.m_value;
     }
 
-    inline bool operator<(const Value &value) const noexcept {
-        return m_type < value.m_type && m_value < value.m_value;
+    inline constexpr bool operator<(const Value &value) const noexcept {
+        return (m_type != Type::REF) && (m_type != Type::UNDEFINED) && m_value < value.m_value;
     }
 
-    inline bool operator>=(const Value &value) const noexcept {
+    inline constexpr bool operator>=(const Value &value) const noexcept {
         return !(*this < value);
     }
 
-    inline bool operator<(uint64_t value) const noexcept {
-        return m_type == Type::INT32 && m_value < value;
+    inline constexpr bool operator<(uint64_t value) const noexcept {
+        return (m_type == Type::INT32) && m_value < value;
     }
 
 private:

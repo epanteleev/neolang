@@ -10,10 +10,10 @@
  */
 class ObjModuleBase : public Object {
 public:
-    explicit ObjModuleBase(const ObjString &moduleName) : Object(moduleName) {}
+    explicit ObjModuleBase(ObjString moduleName) : Object(std::move(moduleName)) {}
 
     ObjModuleBase(ObjModuleBase&& module) noexcept :
-        Object(module.moduleName()),
+        Object(std::move(module.m_name)),
         m_methods(std::move(module.m_methods)) {}
 
     [[nodiscard]]

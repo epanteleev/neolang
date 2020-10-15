@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NEOLANG_EXE="./build/bin/neolang.exe"
+NEOLANG_EXE="./build/bin/neolang"
 
 RED=`tput setaf 1`
 GREEN=`tput setaf 2`

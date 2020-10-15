@@ -38,4 +38,4 @@ add_executable(${PROJECT_NAME} main.cpp ${OBJECTS_SOURCES} ${OBJECTS_HEADERS}
         ${VM_SOURCES} ${VM_HEADERS}
         ${MODULES_SOURCES} ${MODULES_HEADERS}
         ${PARSER_SOURCES} ${PARSER_HEADERS}
-        Vm/Allocator/Allocator.cpp Vm/Allocator/Allocator.h Vm/Allocator/Collector.cpp Vm/Allocator/Collector.h)
+        Vm/Allocator/DefaultAllocator.cpp Vm/Allocator/DefaultAllocator.h Vm/Allocator/Collector.cpp Vm/Allocator/Collector.h Vm/Allocator/RootSet.cpp Vm/Allocator/RootSet.h)

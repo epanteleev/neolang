@@ -1,10 +1,11 @@
-#include "Vm.h"
+#include <Vm/Allocator/RootSet.h>
+#include "Vm/Vm.h"
 
 void Vm::trace() {
     fprintf(stderr, "[Vm trace]\n");
     fprintf(stderr, "[Api stack]\n");
     for (auto& i : m_apiStack) {
-        fprintf(stderr, "\t%llu:%s\n", i.value(), typeToString(i.type()));
+        fprintf(stderr, "\t%lu:%s\n", i.value(), typeToString(i.type()));
     }
     fprintf(stderr, "[Call stack]\n");
     while (!m_callStack.empty()) {
@@ -17,4 +18,9 @@ void Vm::trace() {
 void Vm::vmError(const ObjString& message) noexcept {
     fprintf(stderr, "Vm error: %s\n", message.cstr());
 }
+
+Vm::~Vm() {
+    RootSet::set().finalize();
+}
+
 

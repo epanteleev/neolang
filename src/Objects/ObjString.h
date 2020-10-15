@@ -8,7 +8,7 @@
 class FlatString;
 
 /**
- * Represent string class as flat structure.
+ * Represent string class as flat structure wrapper.
  * @author minium2
  */
 class ObjString {
@@ -28,6 +28,10 @@ public:
     }
 
     virtual ~ObjString();
+
+private:
+    explicit ObjString(FlatString *flatString)
+        : m_string(flatString) {}
 
 public:
 
@@ -76,8 +80,13 @@ public:
 
 public:
     [[nodiscard]]
-    inline Value toValue() const noexcept {
+    inline Value value() const noexcept {
         return Value((uintptr_t) m_string);
+    }
+
+    [[nodiscard]]
+    inline Value toValueAndRelease() noexcept {
+        return Value((uintptr_t) std::exchange(m_string, nullptr));
     }
 
 public:

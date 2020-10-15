@@ -9,7 +9,7 @@
 #include "Objects/ObjMethod.h"
 #include "Objects/ObjModule.h"
 
-#include "Vm/Allocator/Allocator.h"
+#include "Vm/Allocator/DefaultAllocator.h"
 #include "Vm/Instruction.h"
 #include "Vm/ApiStack.h"
 #include "Vm/Value.h"
@@ -20,16 +20,17 @@ enum class VmResult {
     TERMINATE,
     ZERO_DIVISION
 };
+
 static constexpr size_t MAX_LOCAL_VARS = 4;
 using Locals = std::array<Value, MAX_LOCAL_VARS>;
 
-class Vm {
+class Vm final {
 public:
     Vm() = default;
 
     Vm(Vm &) = delete;
 
-    ~Vm() = default;
+    ~Vm();
 
 public:
 
@@ -62,13 +63,13 @@ public:
     }
 
 public:
-    inline void store(Value val, size_t idx) noexcept {
+    inline constexpr void store(Value val, size_t idx) noexcept {
         ASSERT(idx < MAX_LOCAL_VARS, "Invalid variable index.");
         m_local[idx] = val;
     }
 
     [[nodiscard]]
-    inline Value load(size_t idx) const noexcept {
+    inline constexpr Value load(size_t idx) const noexcept {
         ASSERT(idx < MAX_LOCAL_VARS, "Invalid local variables index.");
         return m_local[idx];
     }

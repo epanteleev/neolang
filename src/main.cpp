@@ -25,7 +25,5 @@ int main(int argv, char** args) {
         vm.trace();
         return 1;
     }
-    Collector collector(vm.stack(), vm.locals());
-    collector.collect();
     return 0;
 }

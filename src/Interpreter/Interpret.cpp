@@ -19,7 +19,7 @@
       {                                                                                \
         if (!(condition))                                                              \
         {                                                                              \
-          fprintf(stderr, "%s:%s():%ds " string "\n",__FILE__,                          \
+          fprintf(stderr, "%s:%s():%ds " string "\n",__FILE__,                         \
                     __func__, __LINE__, ##__VA_ARGS__ );                               \
           vm.trace();                                                                  \
           return VmResult::TERMINATE;                                                  \
@@ -46,6 +46,7 @@ INTERPRET(iDiv)
 INTERPRET(iStore)
 INTERPRET(iLoad)
 INTERPRET(iRet)
+INTERPRET(i2f)
 INTERPRET(CallStatic)
 INTERPRET(Ret)
 INTERPRET(Invoke)
@@ -79,6 +80,7 @@ inline VmResult callInstruction(Vm &vm, OpCode opcode) noexcept {
         CASE(iSTORE,     iStore)
         CASE(iLOAD,      iLoad)
         CASE(iRET,       iRet)
+        CASE(I2F,        i2f)
         CASE(fDIV,       fDiv)
         CASE(fADD,       fAdd)
         CASE(fSUB,       fSub)
@@ -127,16 +129,7 @@ VmResult Interpret::apply(const ObjString &moduleName, Vm &vm) {
 }
 
 APPLY(Invoke) {
-    Frame frame = vm.frame();
-    Instruction inst = frame.inst();
-    const auto &module = dynamic_cast<const ObjModule &>(frame.method().module());
-
-    const auto &moduleName = vm.stack().top().toObject()->objectName();
-
-    const ObjString *methodName = module.findString(inst.arg0().value());
-    TERMINATE(methodName != nullptr, "No found method name.");
-
-    return callMethod(vm, moduleName, *methodName);
+    UNREACHABLE();
 }
 
 APPLY(CallStatic) {
@@ -207,15 +200,6 @@ APPLY(iPush) {
     return VmResult::SUCCESS;
 }
 
-APPLY(fPush) {
-    const auto inst = vm.frame().inst();
-    const auto arg = inst.arg0();
-    TERMINATE(arg.type() == Type::FLOAT32,
-              "Invalid type. Required: %s. Found: %s.", typeToString(Type::FLOAT32), typeToString(arg.type()));
-    vm.stack().push(arg);
-    return VmResult::SUCCESS;
-}
-
 APPLY(iMul) {
     const auto a = vm.stack().pop();
     const auto b = vm.stack().pop();
@@ -246,6 +230,24 @@ APPLY(iDiv) {
     ZERO_DIVISION(vm, b.toInt32() != 0);
     const auto result = a.toInt32() / b.toInt32();
     vm.stack().push(Value(result));
+    return VmResult::SUCCESS;
+}
+
+APPLY(iLoad) {
+    const auto instruction = vm.frame().inst();
+    const auto var = instruction.arg0();
+    TERMINATE(var.type() == Type::INT32,
+              "Invalid type. Required: %s. Found: %s.", typeToString(Type::INT32), typeToString(var.type()));
+    const auto a = vm.load(var.value());
+    vm.stack().push(a);
+    return VmResult::SUCCESS;
+}
+
+APPLY(i2f) {
+    const auto val = vm.stack().pop();
+    TERMINATE(val.type() == Type::INT32,
+              "Invalid type. Required: %s. Found: %s.", typeToString(Type::INT32), typeToString(val.type()));
+    vm.stack().push(Value((float)val.value()));
     return VmResult::SUCCESS;
 }
 
@@ -282,6 +284,15 @@ APPLY(fMult) {
     return VmResult::SUCCESS;
 }
 
+APPLY(fPush) {
+    const auto inst = vm.frame().inst();
+    const auto arg = inst.arg0();
+    TERMINATE(arg.type() == Type::FLOAT32,
+              "Invalid type. Required: %s. Found: %s.", typeToString(Type::FLOAT32), typeToString(arg.type()));
+    vm.stack().push(arg);
+    return VmResult::SUCCESS;
+}
+
 APPLY(fStore) {
     const auto instruction = vm.frame().inst();
     const auto variable = instruction.arg0();
@@ -293,7 +304,7 @@ APPLY(fStore) {
     return VmResult::SUCCESS;
 }
 
-APPLY(iLoad) {
+APPLY(fLoad) {
     const auto instruction = vm.frame().inst();
     const auto var = instruction.arg0();
     TERMINATE(var.type() == Type::INT32,
@@ -309,7 +320,7 @@ APPLY(ldc) {
     const auto &module = frame.currentModule();
     const auto *string = module.findString(inst.arg0().value());
     TERMINATE(string != nullptr, "String no found.");
-    vm.stack().push(string->toValue());
+    vm.stack().push(string->value());
     return VmResult::SUCCESS;
 }
 
@@ -330,16 +341,6 @@ APPLY(rStore) {
     TERMINATE(a.type() == Type::REF,
               "Invalid type. Required: %s. Found: %s.", typeToString(Type::REF), typeToString(variable.type()));
     vm.store(a, variable.value());
-    return VmResult::SUCCESS;
-}
-
-APPLY(fLoad) {
-    const auto instruction = vm.frame().inst();
-    const auto var = instruction.arg0();
-    TERMINATE(var.type() == Type::INT32,
-              "Invalid type. Required: %s. Found: %s.", typeToString(Type::INT32), typeToString(var.type()));
-    const auto a = vm.load(var.value());
-    vm.stack().push(a);
     return VmResult::SUCCESS;
 }
 

@@ -20,6 +20,6 @@ public:
         return m_name;
     }
 
-private:
+protected:
     ObjString m_name;
 };

@@ -15,6 +15,7 @@ enum class OpCode : uint8_t {
     iSTORE,
     iLOAD,
     iRET,
+    I2F,
     fADD,
     fSUB,
     fMUL,
@@ -41,6 +42,7 @@ constexpr const char *iPUSH      = "iPUSH";
 constexpr const char *iSTORE     = "iSTORE";
 constexpr const char *iLOAD      = "iLOAD";
 constexpr const char *iRET       = "iRET";
+constexpr const char *I2F        = "I2F";
 constexpr const char *fADD       = "fADD";
 constexpr const char *fSUB       = "fSUB";
 constexpr const char *fMUL       = "fMUL";
@@ -56,7 +58,7 @@ constexpr const char *RET        = "RET";
 constexpr const char *LDC        = "LDC";
 constexpr const char *rPUSH      = "rPUSH";
 constexpr const char *rSTORE     = "rSTORE";
-constexpr const char *IF_EQ     = "IF_EQ";
+constexpr const char *IF_EQ      = "IF_EQ";
 constexpr const char *UNDEFINED  = "UNDEFINED";
 
 inline constexpr const char *opCodeToString(OpCode opcode) noexcept {
@@ -68,6 +70,7 @@ inline constexpr const char *opCodeToString(OpCode opcode) noexcept {
         case OpCode::iPUSH:      return iPUSH;
         case OpCode::iSTORE:     return iSTORE;
         case OpCode::iRET:       return iRET;
+        case OpCode::I2F:        return I2F;
         case OpCode::fADD:       return fADD;
         case OpCode::fSUB:       return fSUB;
         case OpCode::fMUL:       return fMUL;

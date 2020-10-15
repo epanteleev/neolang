@@ -9,8 +9,6 @@ class StringModule final : public ObjNativeModule {
 public:
     StringModule() : ObjNativeModule("String") {}
 
-    static VmResult printType(Vm &vm) noexcept;
-
     static VmResult concat(Vm& vm) noexcept;
 
 public:

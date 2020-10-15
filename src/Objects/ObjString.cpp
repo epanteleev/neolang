@@ -1,5 +1,5 @@
 #include "Objects/ObjString.h"
-#include "Vm/Allocator/Allocator.h"
+#include "Vm/Allocator/DefaultAllocator.h"
 
 #include <iostream>
 #include <cstdint>
@@ -11,13 +11,25 @@ struct FlatString {
     char cstr[0];
 
     inline void *operator new(size_t size, size_t length) {
-        return (void *) Allocator::New(size + length + 1);
+        return (void *) DefaultAllocator::New(size + length + 1);
     }
 
     inline void operator delete(void *ptr) {
-        Allocator::Delete(ptr);
+        DefaultAllocator::Delete(ptr);
     }
+
 };
+
+static FlatString* concat(const char* s1, size_t len1, const char* s2, size_t len2) {
+    size_t len = len1 + len2;
+
+    auto *result = new(len) FlatString();
+    std::copy(s1, s1 + len1, result->cstr);
+    std::copy(s2, s2 + len2, result->cstr + len1);
+    result->cstr[len] = '\0';
+    result->length = len;
+    return result;
+}
 
 ObjString::ObjString(const char *c) {
     if (c == nullptr) {
@@ -47,7 +59,7 @@ size_t ObjString::index(char c) const noexcept {
     for (size_t j = 0; j < m_string->length; j++) {
         if (m_string->cstr[j] == c) return j;
     }
-    return INT64_MAX;
+    return std::numeric_limits<size_t>::max();
 }
 
 
@@ -81,21 +93,7 @@ ObjString &ObjString::operator+=(const ObjString &s) {
 }
 
 ObjString operator+(const ObjString &s1, const ObjString &s2) {
-    size_t len = s1.len() + s2.len();
-    auto *result = new(len) FlatString();
-
-    auto str1 = s1.m_string->cstr;
-    auto len1 = s1.m_string->length;
-    std::copy(str1, str1 + len1, result->cstr);
-
-    auto str2 = s2.m_string->cstr;
-    auto len2 = s2.m_string->length;
-    std::copy(str2, str2 + len2, result->cstr + len1);
-    result->cstr[len] = '\0';
-    result->length = len;
-    ObjString string{};
-    string.m_string = result;
-    return string;
+    return ObjString(concat(s1.cstr(), s1.len(), s2.cstr(), s2.len()));
 }
 
 bool operator==(const ObjString &lhs, const ObjString &rhs) {
@@ -152,7 +150,7 @@ ObjString ObjString::from(const std::string &string) {
         return ObjString();
     }
     auto *str = new(string.length()) FlatString();
-    std::copy(string.begin(), string.end(), str->cstr);
+    std::copy(string.cbegin(), string.cend(), str->cstr);
     str->length = string.length();
     str->cstr[str->length] = '\0';
     ObjString result{};
@@ -161,15 +159,19 @@ ObjString ObjString::from(const std::string &string) {
 }
 
 void ObjString::reset() noexcept {
+    if (m_string == nullptr) {
+        return;
+    }
     delete m_string;
+    m_string = nullptr;
 }
 
 ObjString operator+(const char *s1, const ObjString &s2) {
-    return ObjString(s1) + s2; //Todo rewrite it
+    return ObjString(concat(s1, strlen(s1), s2.cstr(), s2.len()));
 }
 
 ObjString operator+(const ObjString &s1, const char *s2) {
-    return s1 + ObjString(s2); //Todo rewrite it to
+    return ObjString(concat(s1.cstr(), s1.len(), s2, strlen(s2)));
 }
 
 const char *ObjString::cstr() const noexcept {

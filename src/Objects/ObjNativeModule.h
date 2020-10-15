@@ -8,8 +8,8 @@
 
 class ObjNativeModule : public ObjModuleBase {
 public:
-    explicit ObjNativeModule(const ObjString &className) :
-            ObjModuleBase(className) {}
+    explicit ObjNativeModule(ObjString className) :
+            ObjModuleBase(std::move(className)) {}
 
     ObjNativeModule(ObjNativeModule &&module) noexcept:
             ObjModuleBase(std::move(module)) {}
