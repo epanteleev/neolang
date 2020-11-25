@@ -3,6 +3,10 @@
 #include <array>
 #include "Vm/Value.h"
 
+/**
+ * Represent machine stack in virtual machine.
+ * @author minium2
+ */
 class ApiStack final {
 private:
     static constexpr size_t MAX_STACK_SIZE = 64;
@@ -10,7 +14,11 @@ private:
 public:
     ApiStack() = default;
 
+    ApiStack(ApiStack &) = delete;
+
     ~ApiStack() = default;
+
+    ApiStack operator=(ApiStack &) = delete;
 
 public:
     [[nodiscard]]
@@ -33,12 +41,12 @@ public:
     }
 
     [[nodiscard]]
-    inline bool empty() const noexcept {
+    constexpr inline bool empty() const noexcept {
         return m_sp == 0;
     }
 
     [[nodiscard]]
-    inline bool nonEmpty() const noexcept {
+    constexpr inline bool nonEmpty() const noexcept {
         return !empty();
     }
 
@@ -48,11 +56,11 @@ public:
         m_sp++;
     }
 
-    inline Value* begin() noexcept {
+    constexpr inline Value* begin() noexcept {
         return &m_stack[0];
     }
 
-    inline Value* end() noexcept {
+    constexpr inline Value* end() noexcept {
         return &m_stack[m_sp];
     }
 

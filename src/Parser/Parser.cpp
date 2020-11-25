@@ -60,7 +60,9 @@ bool resolveLabels(LabelBuffer& labels, ObjMethod& module) noexcept {
     InstList& list = module.instList();
     for (auto& i: list) {
         if (i.code() == OpCode::IF_EQ) {
-            i = Instruction(OpCode::IF_EQ, Value(labels.position(i.arg0().value())));
+            i = Instruction(OpCode::IF_EQ, Value(labels.position(i.arg0().value()), Type::REF));
+        } else if (i.code() == OpCode::GOTO) {
+            i = Instruction(OpCode::GOTO, Value(labels.position(i.arg0().value()), Type::REF));
         }
     }
     return true;
@@ -76,13 +78,14 @@ inline static bool parseCallStatic(ObjModule &module, ObjMethod &method, Reader 
         return false;
     }
     if(methodName.empty() || className.empty()) {
+        std::cout << "Error parse call static." << std::endl;
         return false;
     }
     ObjString cn = ObjString::from(className);
     ObjString mn = ObjString::from(methodName);
     size_t posCn = module.addStringConstant(cn);
     size_t posCm = module.addStringConstant(mn);
-    method.addInst(Instruction(OpCode::CALLSTATIC, Value(posCn), Value(posCm)));
+    method.addInst(Instruction(OpCode::CALLSTATIC, Value(posCn, Type::REF), Value(posCm, Type::REF)));
     return true;
 }
 
@@ -93,6 +96,7 @@ bool parseLabel(LabelBuffer& labels, size_t ip, Reader& reader) noexcept {
         .expect(Keyword::COLON);
 
     if (reader.error()) {
+        std::cout << "Error label parse." << std::endl;
         return false;
     } else if (reader.noMatch()) {
         reader.reset();
@@ -118,13 +122,13 @@ static bool parseInsts(ObjModule &module, ObjMethod &method, Reader &reader) noe
             method.addInst(Instruction(OpCode::iMUL));
         } else if (instName == iPUSH) {
             int i = reader.getInt();
-            method.addInst(Instruction(OpCode::iPUSH, Value(i)));
+            method.addInst(Instruction(OpCode::iPUSH, i));
         } else if (instName == iLOAD) {
             int i = reader.getInt();
-            method.addInst(Instruction(OpCode::iLOAD, Value(i)));
+            method.addInst(Instruction(OpCode::iLOAD, i));
         } else if (instName == iSTORE) {
             int i = reader.getInt();
-            method.addInst(Instruction(OpCode::iSTORE, Value(i)));
+            method.addInst(Instruction(OpCode::iSTORE, i));
         } else if (instName == iRET) {
             method.addInst(Instruction(OpCode::iRET));
         } else if (instName == fADD) {
@@ -137,18 +141,18 @@ static bool parseInsts(ObjModule &module, ObjMethod &method, Reader &reader) noe
             method.addInst(Instruction(OpCode::fDIV));
         } else if (instName == fPUSH) {
             float i = reader.getFloat();
-            method.addInst(Instruction(OpCode::fPUSH, Value(i)));
+            method.addInst(Instruction(OpCode::fPUSH, i));
         } else if (instName == fSTORE) {
             int i = reader.getInt();
-            method.addInst(Instruction(OpCode::fSTORE, Value(i)));
+            method.addInst(Instruction(OpCode::fSTORE, i));
         } else if (instName == fLOAD) {
             int i = reader.getInt();
-            method.addInst(Instruction(OpCode::fLOAD, Value(i)));
+            method.addInst(Instruction(OpCode::fLOAD, i));
         } else if (instName == fRET) {
             method.addInst(Instruction(OpCode::fRET));
         } else if (instName == rSTORE) {
             auto i = reader.getULong();
-            method.addInst(Instruction(OpCode::rSTORE, Value(i)));
+            method.addInst(Instruction(OpCode::rSTORE, Value(i, Type::REF)));
         } else if (instName == rPUSH) {
             uint64_t i = reader.getULong();
             method.addInst(Instruction(OpCode::rPUSH, Value(i, Type::REF)));
@@ -162,19 +166,30 @@ static bool parseInsts(ObjModule &module, ObjMethod &method, Reader &reader) noe
             std::string string;
             reader.part(string);
             if (string.empty()) {
+                std::cout << "LDC: expected argument." << std::endl;
                 return false;
             }
             ObjString str = ObjString::from(string);
             size_t pos = module.addStringConstant(str);
-            method.addInst(Instruction(OpCode::LDC, Value(pos)));
+            method.addInst(Instruction(OpCode::LDC, Value(pos, Type::REF)));
         } else if (instName == IF_EQ) {
             std::string string;
             reader.part(string);
             if (string.empty()) {
+                std::cout << "IF_EQ: expected argument." << std::endl;
                 return false;
             }
             size_t pos = labels.insert(string);
             method.addInst(Instruction(OpCode::IF_EQ, Value(pos, Type::UNDEFINED)));
+        } else if (instName == GOTO) {
+            std::string string;
+            reader.part(string);
+            if (string.empty()) {
+                std::cout << "GOTO: expected argument." << std::endl;
+                return false;
+            }
+            size_t pos = labels.insert(string);
+            method.addInst(Instruction(OpCode::GOTO, Value(pos, Type::UNDEFINED)));
         } else {
             std::cerr << "Undefined instruction: " << instName << std::endl;
             UNREACHABLE();
@@ -230,7 +245,6 @@ static bool parseModule(Vm &vm, Reader &reader) noexcept {
     vm.addModule(module);
     return true;
 }
-
 
 bool Parser::parse(Vm &vm, const std::filesystem::path &path) noexcept {
     Reader reader;

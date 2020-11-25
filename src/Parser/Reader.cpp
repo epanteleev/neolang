@@ -1,12 +1,16 @@
 #include <fstream>
 #include "Reader.h"
 
-// Returns true if [c] is a valid (non-initial) identifier character.
+/**
+ * Returns true if [c] is a valid (non-initial) identifier character.
+ */
 inline static bool isName(char c) noexcept {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 }
 
-// Returns true if [c] is a digit.
+/**
+ * Returns true if [c] is a digit.
+ */
 inline static bool isDigit(char c) noexcept {
     return c >= '0' && c <= '9';
 }
@@ -19,7 +23,7 @@ Reader& Reader::expect(const Keyword &keyword) noexcept {
     return *this;
 }
 
-Reader & Reader::part(std::string &keyword) noexcept {
+Reader &Reader::part(std::string &keyword) noexcept {
     if (m_match != Reader::ParseStatus::SUCCESS) {
         return *this;
     }

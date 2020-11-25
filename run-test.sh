@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NEOLANG_EXE="./build/bin/neolang"
+NEOLANG_EXE="./build/bin/neolang.exe"
 
 RED=`tput setaf 1`
 GREEN=`tput setaf 2`
@@ -25,6 +25,4 @@ runtest funtest/PrintString.nl "HelloWorld"
 runtest funtest/AddFloat.nl 59
 runtest funtest/CMPTest.nl "Hello"
 runtest funtest/ConcatString.nl "HelloWorld"
-
-
-
+runtest funtest/GotoTest.nl "HelloWORLD"

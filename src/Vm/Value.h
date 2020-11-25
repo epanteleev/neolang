@@ -4,31 +4,35 @@
 #include "Objects/ObjFrwd.h"
 #include "Vm/Type.h"
 
+/**
+ * Represent value in virtual machine.
+ * @author minium2
+ */
 class Value {
 public:
     constexpr explicit Value() :
-            m_value(std::numeric_limits<uint64_t>::min()),
+            m_value(std::numeric_limits<uint64_t>::max()),
             m_type(Type::UNDEFINED) {}
 
     constexpr explicit Value(uint64_t value, Type type) :
             m_value(value),
             m_type(type) {}
 
-    constexpr explicit Value(int val) :
+    constexpr Value(int val) :
             m_value(val),
             m_type(Type::INT32) {}
 
-    constexpr explicit Value(float val) :
+    constexpr Value(float val) :
             m_value(val),
             m_type(Type::FLOAT32) {}
 
-    constexpr explicit Value(double val) :
+    constexpr Value(double val) :
             m_value(val),
             m_type(Type::FLOAT64) {}
 
-    constexpr explicit Value(uintptr_t ref) :
+    constexpr Value(long ref) :
             m_value(ref),
-            m_type(Type::REF) {}
+            m_type(Type::UINT64) {}
 
     [[nodiscard]]
     constexpr Type type() const noexcept { return m_type; }

@@ -31,7 +31,8 @@ enum class OpCode : uint8_t {
     rPUSH,
     rSTORE,
     RET,
-    IF_EQ
+    IF_EQ,
+    GOTO
 };
 
 constexpr const char *iADD       = "iADD";
@@ -60,6 +61,7 @@ constexpr const char *rPUSH      = "rPUSH";
 constexpr const char *rSTORE     = "rSTORE";
 constexpr const char *IF_EQ      = "IF_EQ";
 constexpr const char *UNDEFINED  = "UNDEFINED";
+constexpr const char *GOTO       = "GOTO";
 
 inline constexpr const char *opCodeToString(OpCode opcode) noexcept {
     switch (opcode) {
@@ -86,6 +88,7 @@ inline constexpr const char *opCodeToString(OpCode opcode) noexcept {
         case OpCode::rSTORE:     return rSTORE;
         case OpCode::IF_EQ:      return IF_EQ;
         case OpCode::RET:        return RET;
+        case OpCode::GOTO:       return GOTO;
         default:                 return UNDEFINED;
     }
 }

@@ -63,6 +63,7 @@ INTERPRET(ldc)
 INTERPRET(rPush)
 INTERPRET(rStore)
 INTERPRET(IfCmp)
+INTERPRET(Goto)
 
 static VmResult callMethod(Vm &vm, const ObjString &moduleName, const ObjString &methodName) noexcept {
     ObjMethodBase *method = vm.modules().findMethod(moduleName, methodName);
@@ -96,7 +97,8 @@ inline VmResult callInstruction(Vm &vm, OpCode opcode) noexcept {
         CASE(LDC,        ldc)
         CASE(rSTORE,     rStore)
         CASE(rPUSH,      rPush)
-        CASE(IF_EQ,     IfCmp)
+        CASE(IF_EQ,      IfCmp)
+        CASE(GOTO,       Goto)
         default: TERMINATE(false, "Undefined instruction: %s", opCodeToString(opcode));
     }
 }
@@ -352,5 +354,11 @@ APPLY(IfCmp) {
     if (a == b) {
         vm.frame().gotoInst(ip.value() - 1);
     }
+    return VmResult::SUCCESS;
+}
+
+APPLY(Goto) {
+    const auto ip = vm.frame().inst().arg0();
+    vm.frame().gotoInst(ip.value() - 1);
     return VmResult::SUCCESS;
 }
