@@ -8,14 +8,14 @@
 
 class ObjMethodBase : public Object {
 public:
-    explicit ObjMethodBase(const ObjModuleBase &mModule, ObjString methodName) :
-            Object(std::move(methodName)),
-            m_module(mModule) {}
+    explicit ObjMethodBase(ObjString methodName) :
+            Object(std::move(methodName)) {}
 
     ObjMethodBase(ObjMethodBase&& method) noexcept :
             Object(std::move(method.m_name)),
             m_module(method.m_module) {}
 
+public:
     [[nodiscard]]
     inline const ObjString &methodName() const noexcept {
         return objectName();
@@ -23,7 +23,7 @@ public:
 
     [[nodiscard]]
     inline const ObjModuleBase &module() const noexcept {
-        return m_module;
+        return *m_module;
     }
 
     [[nodiscard]]
@@ -31,6 +31,10 @@ public:
 
     virtual VmResult apply(Vm &vm) noexcept = 0;
 
+    inline void setModule(ObjModuleBase *module) noexcept {
+        m_module = module;
+    }
+
 protected:
-    const ObjModuleBase &m_module;
+    const ObjModuleBase *m_module{};
 };

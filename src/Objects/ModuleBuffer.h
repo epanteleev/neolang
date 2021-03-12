@@ -32,11 +32,11 @@ public:
      */
     ObjMethodBase *findMethod(const ObjString &moduleName, const ObjString &name) noexcept;
 
-    inline void addModule(std::unique_ptr<ObjNativeModule> &module) noexcept {
+    inline void addModule(std::unique_ptr<ObjNativeModule> &&module) noexcept {
         m_modules.push_back(std::move(module));
     }
 
-    inline void addModule(std::unique_ptr<ObjModule> &module) noexcept {
+    inline void addModule(std::unique_ptr<ObjModule> &&module) noexcept {
         m_modules.push_back(std::move(module));
     }
 

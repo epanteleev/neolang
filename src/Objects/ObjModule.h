@@ -26,18 +26,19 @@ public:
 
 public:
 
-    inline void addMethod(std::unique_ptr<ObjMethod> &method) noexcept {
+    inline void addMethod(std::unique_ptr<ObjMethod> &&method) noexcept {
+        method->setModule(this);
         m_methods.push_back(std::move(method));
     }
 
-    inline void addConstants(StringBuffer &strings) noexcept {
+    inline void addConstants(StringBuffer &&strings) noexcept {
         m_constantStrings = std::move(strings);
     }
     /**
      * Insert given str to string pull.
      * @return position str in string buffer.
      */
-    inline size_t addStringConstant(ObjString &str) noexcept {
+    inline size_t addStringConstant(ObjString &&str) noexcept {
         m_constantStrings.push_back(std::move(str));
         return m_constantStrings.size() - 1;
     }

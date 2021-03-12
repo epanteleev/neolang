@@ -1,5 +1,6 @@
 #include <fstream>
 #include "Reader.h"
+#include "Parser.h"
 
 /**
  * Returns true if [c] is a valid (non-initial) identifier character.
@@ -15,23 +16,20 @@ inline static bool isDigit(char c) noexcept {
     return c >= '0' && c <= '9';
 }
 
-Reader& Reader::expect(const Keyword &keyword) noexcept {
-    if (m_match == Reader::ParseStatus::ERROR) {
-        return *this;
+Reader& Reader::expect(const Keywords &keyword) {
+    if (!match(keyword)) {
+        throw ParseError(std::to_string(m_pos) + ":" + std::to_string(m_line) +
+        " parse error: expect '" + tokToString(keyword) + "'. found '" + tokToString(getTok()));
     }
-    match(keyword);
     return *this;
 }
 
-Reader &Reader::part(std::string &keyword) noexcept {
-    if (m_match != Reader::ParseStatus::SUCCESS) {
-        return *this;
-    }
+Reader &Reader::expectId(std::string &id) {
     const auto word = getWord();
-    if (word.empty()) {
-        m_match = Reader::ParseStatus::ERROR;
+    if (!word.empty()) {
+        id = word;
     } else {
-        keyword = word;
+        throw ParseError(std::to_string(m_pos) + ":" + std::to_string(m_line) + " parse error: expect identifier.");
     }
     return *this;
 }
@@ -45,7 +43,7 @@ bool Reader::open(const std::string &fileName) noexcept {
     std::string line;
     while (file) {
         std::getline(file, line);
-        m_buffer += line;
+        m_buffer += (line + '\n');// Todo refactor it
     }
     file.close();
     return true;
@@ -63,54 +61,65 @@ std::string Reader::getWord() noexcept {
     return str;
 }
 
-bool matchChar(char ch, Keyword keyword) noexcept {
+Keywords getKeyword(char ch) noexcept {
     switch (ch) {
-        case '(': return keyword == Keyword::OPEN_PAREN;
-        case ')': return keyword == Keyword::CLOSE_PAREN;
-        case '{': return keyword == Keyword::OPEN_BRACE;
-        case '}': return keyword == Keyword::CLOSE_BRACE;
-        case '.': return keyword == Keyword::DOT;
-        case '*': return keyword == Keyword::STAR;
-        case '=': return keyword == Keyword::EQ;
-        case ':': return keyword == Keyword::COLON;
-        default: return false;
+        case '(': return Keywords::OPEN_PAREN;
+        case ')': return Keywords::CLOSE_PAREN;
+        case '{': return Keywords::OPEN_BRACE;
+        case '}': return Keywords::CLOSE_BRACE;
+        case '.': return Keywords::DOT;
+        case '*': return Keywords::STAR;
+        case '=': return Keywords::EQ;
+        case ':': return Keywords::COLON;
+        default: return Keywords::NONE;
     }
 }
 
-bool matchWord(std::string& string, Keyword keyword) noexcept {
+Keywords getKeyword(std::string& string) noexcept {
     for (auto &i: entries) {
         if (i.key == string)
-            return keyword == i.value;
+            return i.value;
     }
-    return false;
+    return Keywords::NONE;
 }
 
-bool Reader::match(Keyword keyword) noexcept {
+std::tuple<std::size_t, Keywords> Reader::parseKeyword() {
     removeSpace();
-    char ch = getChar();
-    if (matchChar(ch, keyword)) {
-        m_match = Reader::ParseStatus::SUCCESS;
-        return true;
+    char ch = peek();
+    auto tok = getKeyword(ch);
+    if (tok != Keywords::NONE) {
+        getChar();
+        return std::make_tuple(1, tok);
     }
-    ungetChar();
-    if (!isName(ch)) {
-        m_match = Reader::ParseStatus::NO_MATCH;
-        return false;
+    if (ch == '\n') {
+        m_line += 1;
+        m_pos = 0;
+        getChar();
+        return std::make_tuple(1, Keywords::NEWLINE);
     }
+
     std::string word = getWord();
-    if (matchWord(word, keyword)) {
-        m_match = Reader::ParseStatus::SUCCESS;
-        return true;
+    tok = getKeyword(word);
+    if (tok != Keywords::NONE) {
+        return std::make_tuple(word.size(), tok);
     } else {
-        m_match = Reader::ParseStatus::NO_MATCH;
-        unget(word.size());
+        return std::make_tuple(word.size(), Keywords::NONE);
+    }
+}
+
+bool Reader::match(Keywords keyword) noexcept {
+    auto [pos, tok] = parseKeyword();
+    if (tok != keyword) {
+        unget(pos);
         return false;
+    } else {
+        return true;
     }
 }
 
 void Reader::removeSpace() noexcept {
     char ch = getChar();
-    while (std::isspace(ch)) {
+    while (ch == ' ' || ch == '\t') {
         ch = getChar();
     }
     ungetChar();

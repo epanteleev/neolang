@@ -34,12 +34,12 @@ public:
 
 public:
 
-    inline void addModule(std::unique_ptr<ObjModule> &module) noexcept {
-        m_modules.addModule(module);
+    inline void addModule(std::unique_ptr<ObjModule> &&module) noexcept {
+        m_modules.addModule(std::move(module));
     }
 
-    inline void addModule(std::unique_ptr<ObjNativeModule> &module) noexcept {
-        m_modules.addModule(module);
+    inline void addModule(std::unique_ptr<ObjNativeModule> &&module) noexcept {
+        m_modules.addModule(std::move(module));
     }
 
     inline ApiStack &stack() noexcept {

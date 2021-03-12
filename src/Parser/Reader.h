@@ -2,42 +2,12 @@
 
 #include <cstdint>
 #include <string>
+#include <tuple>
 
-enum class Keyword : uint8_t {
-    DEF,
-    IMPORT,
-    CLASS,
-    OPEN_BRACE,
-    CLOSE_BRACE,
-    OPEN_PAREN,
-    CLOSE_PAREN,
-    EQ,
-    DOT,
-    STAR,
-    COLON,
-    NONE
-};
-
-struct KeywordEntry {
-    Keyword value;
-    const char *key;
-};
-
-static constexpr KeywordEntry entries[] = {
-        {Keyword::DEF,    "def"},
-        {Keyword::IMPORT, "import"},
-        {Keyword::CLASS,  "class"}
-};
+#include "Parser/Keywords.h"
 
 // Todo: Change std::string to ObjString.
 class Reader final {
-public:
-    enum class ParseStatus: uint8_t {
-        NO_MATCH,
-        ERROR,
-        SUCCESS
-    };
-
 public:
     Reader() = default;
 
@@ -53,7 +23,12 @@ public:
     bool open(const std::string &fileName) noexcept;
 
     inline char getChar() noexcept {
+        m_pos += 1;
         return m_buffer[m_currPos++];
+    }
+
+    inline char peek() noexcept {
+        return m_buffer[m_currPos];
     }
 
     [[nodiscard]]
@@ -74,45 +49,34 @@ public:
         return std::stoull(getWord());
     }
 
-    Reader& expect(const Keyword &keyword) noexcept;
+    Reader& expect(const Keywords &keyword);
 
-    Reader& part(std::string &keyword) noexcept;
+    Reader& expectId(std::string &id);
 
-    [[nodiscard]]
-    inline bool noMatch() const noexcept {
-        return m_match == ParseStatus::NO_MATCH;
-    }
-
-    [[nodiscard]]
-    inline bool success() const noexcept {
-        return m_match == ParseStatus::SUCCESS;
-    }
-
-    [[nodiscard]]
-    inline bool error() const noexcept {
-        return m_match == ParseStatus::ERROR;
-    }
-    inline void reset() noexcept {
-        if (m_match == ParseStatus::NO_MATCH) {
-            m_match = ParseStatus::SUCCESS;
-        }
-    }
-
+    bool match(Keywords keyword) noexcept;
 private:
-    bool match(Keyword keyword) noexcept;
 
     inline void ungetChar() noexcept {
-        m_currPos--;
+        unget(1);
     }
 
     inline void unget(size_t offset) noexcept {
         m_currPos -= offset;
+        m_pos -= offset;
     }
 
     inline void removeSpace() noexcept;
 
+    std::tuple<std::size_t, Keywords> parseKeyword();
+
+    inline Keywords getTok() {
+        return std::get<1>(parseKeyword());
+    }
+
 private:
     std::string m_buffer{};
+    std::size_t m_line{};
+    std::size_t m_pos{};
+    Keywords m_currTok{};
     size_t m_currPos{};
-    ParseStatus m_match{};
 };

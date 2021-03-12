@@ -13,16 +13,18 @@ int main(int argv, char** args) {
         return 1;
     }
     std::filesystem::path file(args[1]);
-    Vm vm;
-    if (!Parser::parse(vm, file)) {
+    std::unique_ptr<Vm> vm;
+    try {
+        vm = Parser::parse(file);
+    } catch (ParseError& err) {
+        std::cout << err.what() << std::endl;
         return 1;
     }
-    auto module = BaseIO::makeModule();
-    vm.addModule(module);
-    auto stringModule = StringModule::makeModule();
-    vm.addModule(stringModule);
-    if(Interpret::apply(file.stem().string().data(), vm) != VmResult::SUCCESS) {
-        vm.trace();
+
+    vm->addModule(BaseIO::makeModule());
+    vm->addModule(StringModule::makeModule());
+    if(Interpret::apply(file.stem().string().data(), *vm) != VmResult::SUCCESS) {
+        vm->trace();
         return 1;
     }
     return 0;

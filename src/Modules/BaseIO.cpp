@@ -39,19 +39,19 @@ VmResult BaseIO::printString(Vm &vm) noexcept {
 std::unique_ptr<ObjNativeModule> BaseIO::makeModule() noexcept {
     auto module = std::make_unique<BaseIO>();
 
-    auto method0 = ObjNativeMethod::make(*module, "printInt", printInt);
-    module->addMethod(method0);
+    auto method0 = ObjNativeMethod::make("printInt", printInt);
+    module->addMethod(std::move(method0));
 
-    auto method1 = ObjNativeMethod::make(*module, "printFloat", printFloat);
-    module->addMethod(method1);
+    auto method1 = ObjNativeMethod::make("printFloat", printFloat);
+    module->addMethod(std::move(method1));
 
-    auto method2 = ObjNativeMethod::make(*module, "readInt", readInt);
-    module->addMethod(method2);
+    auto method2 = ObjNativeMethod::make("readInt", readInt);
+    module->addMethod(std::move(method2));
 
-    auto method3 = ObjNativeMethod::make(*module, "readFloat", readFloat);
-    module->addMethod(method3);
+    auto method3 = ObjNativeMethod::make("readFloat", readFloat);
+    module->addMethod(std::move(method3));
 
-    auto method4 = ObjNativeMethod::make(*module, "printString", printString);
-    module->addMethod(method4);
+    auto method4 = ObjNativeMethod::make("printString", printString);
+    module->addMethod(std::move(method4));
     return module;
 }

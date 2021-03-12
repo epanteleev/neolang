@@ -15,12 +15,12 @@ using Native = std::function<VmResult(Vm &)>;
  */
 class ObjNativeMethod : public ObjMethodBase {
 public:
-    explicit ObjNativeMethod(const ObjModuleBase &module, ObjString moduleName, Native &func) :
-            ObjMethodBase(module, std::move(moduleName)),
+    explicit ObjNativeMethod(ObjString moduleName, Native &func) :
+            ObjMethodBase(std::move(moduleName)),
             m_func(std::move(func)) {}
 
     ObjNativeMethod(ObjNativeMethod &&module) noexcept:
-            ObjMethodBase(module.m_module, std::move(module.m_name)),
+            ObjMethodBase(std::move(module.m_name)),
             m_func(std::move(module.m_func)) {}
 
     ObjNativeMethod(ObjNativeMethod &) = delete;
@@ -38,10 +38,8 @@ public:
     inline bool isNative() const noexcept override { return true; }
 
 public:
-    inline static std::unique_ptr<ObjNativeMethod> make(const ObjModuleBase &module,
-                                                        const ObjString &moduleName,
-                                                        Native func) noexcept {
-        return std::make_unique<ObjNativeMethod>(module, moduleName, func);
+    inline static std::unique_ptr<ObjNativeMethod> make(const ObjString &moduleName, Native func) noexcept {
+        return std::make_unique<ObjNativeMethod>(moduleName, func);
     }
 
 private:

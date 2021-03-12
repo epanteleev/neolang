@@ -16,7 +16,7 @@ public:
 
     ~ObjNativeModule() override = default;
 
-    inline void addMethod(std::unique_ptr<ObjNativeMethod> &method) noexcept {
+    inline void addMethod(std::unique_ptr<ObjNativeMethod> &&method) noexcept {
         m_methods.push_back(std::move(method));
     }
 };

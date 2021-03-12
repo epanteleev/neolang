@@ -55,7 +55,6 @@ private:
     std::map<Identifier, InstPointer> m_labelMap;
 };
 
-
 bool resolveLabels(LabelBuffer& labels, ObjMethod& module) noexcept {
     InstList& list = module.instList();
     for (auto& i: list) {
@@ -68,45 +67,39 @@ bool resolveLabels(LabelBuffer& labels, ObjMethod& module) noexcept {
     return true;
 }
 
-inline static bool parseCallStatic(ObjModule &module, ObjMethod &method, Reader &reader) noexcept {
+inline static bool parseCallStatic(ObjModule &module, ObjMethod &method, Reader &reader) {
     std::string className, methodName;
-    reader.part(className)
-            .expect(Keyword::COLON)
-            .expect(Keyword::COLON)
-            .part(methodName);
-    if (!reader.success()) {
-        return false;
-    }
+    reader.expectId(className)
+            .expect(Keywords::COLON)
+            .expect(Keywords::COLON)
+            .expectId(methodName);
+
     if(methodName.empty() || className.empty()) {
         std::cout << "Error parse call static." << std::endl;
         return false;
     }
     ObjString cn = ObjString::from(className);
     ObjString mn = ObjString::from(methodName);
-    size_t posCn = module.addStringConstant(cn);
-    size_t posCm = module.addStringConstant(mn);
+    size_t posCn = module.addStringConstant(std::move(cn));
+    size_t posCm = module.addStringConstant(std::move(mn));
     method.addInst(Instruction(OpCode::CALLSTATIC, Value(posCn, Type::REF), Value(posCm, Type::REF)));
     return true;
 }
 
-bool parseLabel(LabelBuffer& labels, size_t ip, Reader& reader) noexcept {
+bool parseLabel(LabelBuffer& labels, size_t ip, Reader& reader) {
     std::string label;
-    reader.expect(Keyword::DOT)
-        .part(label)
-        .expect(Keyword::COLON);
-
-    if (reader.error()) {
-        std::cout << "Error label parse." << std::endl;
-        return false;
-    } else if (reader.noMatch()) {
-        reader.reset();
+    if (!reader.match(Keywords::DOT)) {
         return true;
     }
+    reader.expectId(label)
+        .expect(Keywords::COLON);
+
     labels.add(label, ip);
+    reader.expect(Keywords::NEWLINE);
     return true;
 }
 
-static bool parseInsts(ObjModule &module, ObjMethod &method, Reader &reader) noexcept {
+static bool parseInsts(ObjModule &module, ObjMethod &method, Reader &reader) {
     size_t ip = 0;
     LabelBuffer labels;
     parseLabel(labels, ip, reader);
@@ -164,17 +157,17 @@ static bool parseInsts(ObjModule &module, ObjMethod &method, Reader &reader) noe
             method.addInst(Instruction(OpCode::RET));
         } else if (instName == LDC) {
             std::string string;
-            reader.part(string);
+            reader.expectId(string);
             if (string.empty()) {
                 std::cout << "LDC: expected argument." << std::endl;
                 return false;
             }
             ObjString str = ObjString::from(string);
-            size_t pos = module.addStringConstant(str);
+            size_t pos = module.addStringConstant(std::move(str));
             method.addInst(Instruction(OpCode::LDC, Value(pos, Type::REF)));
         } else if (instName == IF_EQ) {
             std::string string;
-            reader.part(string);
+            reader.expectId(string);
             if (string.empty()) {
                 std::cout << "IF_EQ: expected argument." << std::endl;
                 return false;
@@ -183,7 +176,7 @@ static bool parseInsts(ObjModule &module, ObjMethod &method, Reader &reader) noe
             method.addInst(Instruction(OpCode::IF_EQ, Value(pos, Type::UNDEFINED)));
         } else if (instName == GOTO) {
             std::string string;
-            reader.part(string);
+            reader.expectId(string);
             if (string.empty()) {
                 std::cout << "GOTO: expected argument." << std::endl;
                 return false;
@@ -195,6 +188,7 @@ static bool parseInsts(ObjModule &module, ObjMethod &method, Reader &reader) noe
             UNREACHABLE();
         }
         ip++;
+        reader.expect(Keywords::NEWLINE);
         parseLabel(labels, ip, reader);
         instName = reader.getWord();
     }
@@ -202,59 +196,51 @@ static bool parseInsts(ObjModule &module, ObjMethod &method, Reader &reader) noe
     return true;
 }
 
-static bool parseMethod(ObjModule &module, Reader &reader) noexcept {
+static bool parseMethod(ObjModule &module, Reader &reader) {
     std::string methodName;
-    reader.expect(Keyword::DEF)
-            .part(methodName)
-            .expect(Keyword::EQ)
-            .expect(Keyword::OPEN_BRACE);
-    if (reader.error()) {
+    if (!reader.match(Keywords::DEF)) {
         return false;
-    } else if (reader.noMatch()) {
-        return true;
     }
+    reader.expectId(methodName)
+            .expect(Keywords::EQ)
+            .expect(Keywords::OPEN_BRACE);
+    reader.match(Keywords::NEWLINE);
 
-    auto method = ObjMethod::make(module, methodName.data());
+    auto method = ObjMethod::make(methodName.data());
     parseInsts(module, *method, reader);
-    module.addMethod(method);
+    module.addMethod(std::move(method));
 
-    reader.expect(Keyword::CLOSE_BRACE);
-    if (!reader.success()) {
-        return false;
-    }
+    reader.expect(Keywords::CLOSE_BRACE);
+    reader.match(Keywords::NEWLINE);
     return true;
 }
 
-static bool parseModule(Vm &vm, Reader &reader) noexcept {
+static bool parseModule(Vm &vm, Reader &reader) {
     std::string className;
-    reader.expect(Keyword::CLASS).part(className).expect(Keyword::OPEN_BRACE);
-    if (reader.error()) {
-        return false;
-    } else if (reader.noMatch()) {
-        return true;
-    }
+    reader.expect(Keywords::CLASS).expectId(className);
+    reader.match(Keywords::NEWLINE);
+    reader.expect(Keywords::OPEN_BRACE);
+    reader.match(Keywords::NEWLINE);
 
     auto module = ObjModule::make(ObjString::from(className));
-    while (!reader.noMatch()) {
-        parseMethod(*module, reader);
+
+    while (parseMethod(*module, reader)) {
+        reader.match(Keywords::NEWLINE);
     }
-    reader.expect(Keyword::CLOSE_BRACE);
-    if (reader.error()) {
-        return false;
-    }
-    vm.addModule(module);
+
+    reader.expect(Keywords::CLOSE_BRACE);
+
+    vm.addModule(std::move(module));
     return true;
 }
 
-bool Parser::parse(Vm &vm, const std::filesystem::path &path) noexcept {
+std::unique_ptr<Vm> Parser::parse(const std::filesystem::path &path) {
     Reader reader;
     if (!reader.open(path.string())) {
         std::cerr << "File " << path << " wasn't open." << std::endl;
-        return false;
+        throw std::invalid_argument("File isn't exist.");
     }
-    if (!parseModule(vm, reader)) {
-        std::cerr << "Parse error." << std::endl;
-        return false;
-    }
-    return true;
+    auto vm = std::make_unique<Vm>();
+    parseModule(*vm, reader);
+    return vm;
 }

@@ -19,11 +19,11 @@
  */
 class ObjMethod : public ObjMethodBase {
 public:
-    explicit ObjMethod(const ObjModuleBase &module, ObjString methodName) :
-            ObjMethodBase(module, std::move(methodName)) {}
+    explicit ObjMethod(ObjString methodName) :
+            ObjMethodBase(std::move(methodName)) {}
 
-    explicit ObjMethod(const ObjModuleBase &module, ObjString methodName, InstList &instList) :
-            ObjMethodBase(module, std::move(methodName)),
+    explicit ObjMethod(ObjString methodName, InstList &instList) :
+            ObjMethodBase(std::move(methodName)),
             m_instList(std::move(instList)) {}
 
     ObjMethod(ObjMethod &&method) noexcept:
@@ -47,13 +47,12 @@ public:
     VmResult apply(Vm &vm) noexcept override;
 
 public:
-    static std::unique_ptr<ObjMethod> make(const ObjModuleBase &method, ObjString name,
-                                               InstList &instList) noexcept {
-        return std::make_unique<ObjMethod>(method, std::move(name), instList);
+    static std::unique_ptr<ObjMethod> make(ObjString name, InstList &instList) noexcept {
+        return std::make_unique<ObjMethod>(std::move(name), instList);
     }
 
-    static std::unique_ptr<ObjMethod> make(const ObjModuleBase &method, ObjString name) noexcept {
-        return std::make_unique<ObjMethod>(method, std::move(name));
+    static std::unique_ptr<ObjMethod> make(ObjString name) noexcept {
+        return std::make_unique<ObjMethod>(std::move(name));
     }
 
 private:
