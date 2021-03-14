@@ -18,13 +18,13 @@ public:
         return m_labels[idx];
     }
 
-    Identifier add(std::string &labelName, size_t ip) noexcept {
-        size_t pos = insert(labelName);
+    Identifier add(std::string &&labelName, size_t ip) noexcept {
+        size_t pos = insert(std::move(labelName));
         m_labelMap.insert(std::make_pair(pos, ip));
         return pos;
     }
 
-    Identifier insert(std::string& labelName) noexcept {
+    Identifier insert(std::string&& labelName) noexcept {
         auto pos = index(labelName);
         if (pos == npos) {
             m_labels.push_back(std::move(labelName));
@@ -67,136 +67,114 @@ bool resolveLabels(LabelBuffer& labels, ObjMethod& module) noexcept {
     return true;
 }
 
-inline static bool parseCallStatic(ObjModule &module, ObjMethod &method, Reader &reader) {
+Instruction Parser::parseCallStatic(ObjModule &module) {
     std::string className, methodName;
     reader.expectId(className)
             .expect(Keywords::COLON)
             .expect(Keywords::COLON)
             .expectId(methodName);
 
-    if(methodName.empty() || className.empty()) {
-        std::cout << "Error parse call static." << std::endl;
-        return false;
-    }
-    ObjString cn = ObjString::from(className);
-    ObjString mn = ObjString::from(methodName);
-    size_t posCn = module.addStringConstant(std::move(cn));
-    size_t posCm = module.addStringConstant(std::move(mn));
-    method.addInst(Instruction(OpCode::CALLSTATIC, Value(posCn, Type::REF), Value(posCm, Type::REF)));
-    return true;
+    size_t posCn = module.addStringConstant(ObjString::from(className));
+    size_t posCm = module.addStringConstant(ObjString::from(methodName));
+    return Instruction(OpCode::CALLSTATIC, Value(posCn, Type::REF), Value(posCm, Type::REF));
 }
 
-bool parseLabel(LabelBuffer& labels, size_t ip, Reader& reader) {
+std::string Parser::parseLabel() {
     std::string label;
-    if (!reader.match(Keywords::DOT)) {
-        return true;
-    }
+
     reader.expectId(label)
         .expect(Keywords::COLON);
 
-    labels.add(label, ip);
     reader.expect(Keywords::NEWLINE);
-    return true;
+    return label;
 }
 
-static bool parseInsts(ObjModule &module, ObjMethod &method, Reader &reader) {
+InstList Parser::parseInstructions(ObjModule &module, LabelBuffer& labels) {
     size_t ip = 0;
-    LabelBuffer labels;
-    parseLabel(labels, ip, reader);
-    std::string instName = reader.getWord();
-    while (!instName.empty()) {
+    InstList instList;
+    while (true) {
+        if (reader.match(Keywords::DOT)) {
+            labels.add(parseLabel(), ip);
+        }
+        std::string instName = reader.getWord();
+        if (instName.empty()) {
+            break;
+        }
         if (instName == iADD) {
-            method.addInst(Instruction(OpCode::iADD));
+            instList.emplace_back(OpCode::iADD);
         } else if (instName == iSUB) {
-            method.addInst(Instruction(OpCode::iSUB));
+            instList.emplace_back(OpCode::iSUB);
         } else if (instName == iDIV) {
-            method.addInst(Instruction(OpCode::iDIV));
+            instList.emplace_back(OpCode::iDIV);
         } else if (instName == iMUL) {
-            method.addInst(Instruction(OpCode::iMUL));
+            instList.emplace_back(OpCode::iMUL);
         } else if (instName == iPUSH) {
             int i = reader.getInt();
-            method.addInst(Instruction(OpCode::iPUSH, i));
+            instList.emplace_back(OpCode::iPUSH, i);
         } else if (instName == iLOAD) {
             int i = reader.getInt();
-            method.addInst(Instruction(OpCode::iLOAD, i));
+            instList.emplace_back(OpCode::iLOAD, i);
         } else if (instName == iSTORE) {
             int i = reader.getInt();
-            method.addInst(Instruction(OpCode::iSTORE, i));
+            instList.emplace_back(OpCode::iSTORE, i);
         } else if (instName == iRET) {
-            method.addInst(Instruction(OpCode::iRET));
+            instList.emplace_back(OpCode::iRET);
         } else if (instName == fADD) {
-            method.addInst(Instruction(OpCode::fADD));
+            instList.emplace_back(OpCode::fADD);
         } else if (instName == fSUB) {
-            method.addInst(Instruction(OpCode::fSUB));
+            instList.emplace_back(OpCode::fSUB);
         } else if (instName == fMUL) {
-            method.addInst(Instruction(OpCode::fMUL));
+            instList.emplace_back(OpCode::fMUL);
         } else if (instName == fDIV) {
-            method.addInst(Instruction(OpCode::fDIV));
+            instList.emplace_back(OpCode::fDIV);
         } else if (instName == fPUSH) {
             float i = reader.getFloat();
-            method.addInst(Instruction(OpCode::fPUSH, i));
+            instList.emplace_back(OpCode::fPUSH, i);
         } else if (instName == fSTORE) {
             int i = reader.getInt();
-            method.addInst(Instruction(OpCode::fSTORE, i));
+            instList.emplace_back(OpCode::fSTORE, i);
         } else if (instName == fLOAD) {
             int i = reader.getInt();
-            method.addInst(Instruction(OpCode::fLOAD, i));
+            instList.emplace_back(OpCode::fLOAD, i);
         } else if (instName == fRET) {
-            method.addInst(Instruction(OpCode::fRET));
+            instList.emplace_back(OpCode::fRET);
         } else if (instName == rSTORE) {
             auto i = reader.getULong();
-            method.addInst(Instruction(OpCode::rSTORE, Value(i, Type::REF)));
+            instList.emplace_back(OpCode::rSTORE, Value(i, Type::REF));
         } else if (instName == rPUSH) {
             uint64_t i = reader.getULong();
-            method.addInst(Instruction(OpCode::rPUSH, Value(i, Type::REF)));
+            instList.emplace_back(OpCode::rPUSH, Value(i, Type::REF));
         } else if (instName == CALLSTATIC) {
-            if (!parseCallStatic(module, method, reader)) {
-                return false;
-            }
+            instList.emplace_back(parseCallStatic(module));
         } else if (instName == RET) {
-            method.addInst(Instruction(OpCode::RET));
+            instList.emplace_back(OpCode::RET);
         } else if (instName == LDC) {
             std::string string;
             reader.expectId(string);
-            if (string.empty()) {
-                std::cout << "LDC: expected argument." << std::endl;
-                return false;
-            }
-            ObjString str = ObjString::from(string);
-            size_t pos = module.addStringConstant(std::move(str));
-            method.addInst(Instruction(OpCode::LDC, Value(pos, Type::REF)));
+            size_t pos = module.addStringConstant(ObjString::from(string));
+            instList.emplace_back(OpCode::LDC, Value(pos, Type::REF));
         } else if (instName == IF_EQ) {
             std::string string;
             reader.expectId(string);
-            if (string.empty()) {
-                std::cout << "IF_EQ: expected argument." << std::endl;
-                return false;
-            }
-            size_t pos = labels.insert(string);
-            method.addInst(Instruction(OpCode::IF_EQ, Value(pos, Type::UNDEFINED)));
+            size_t pos = labels.insert(std::move(string));
+            instList.emplace_back(OpCode::IF_EQ, Value(pos, Type::UNDEFINED));
         } else if (instName == GOTO) {
             std::string string;
             reader.expectId(string);
-            if (string.empty()) {
-                std::cout << "GOTO: expected argument." << std::endl;
-                return false;
-            }
-            size_t pos = labels.insert(string);
-            method.addInst(Instruction(OpCode::GOTO, Value(pos, Type::UNDEFINED)));
+
+            size_t pos = labels.insert(std::move(string));
+            instList.emplace_back(OpCode::GOTO, Value(pos, Type::UNDEFINED));
         } else {
             std::cerr << "Undefined instruction: " << instName << std::endl;
             UNREACHABLE();
         }
-        ip++;
+        ip += 1;
         reader.expect(Keywords::NEWLINE);
-        parseLabel(labels, ip, reader);
-        instName = reader.getWord();
     }
-    resolveLabels(labels, method);
-    return true;
+    return instList;
 }
 
-static bool parseMethod(ObjModule &module, Reader &reader) {
+bool Parser::parseMethod(ObjModule &module) {
     std::string methodName;
     if (!reader.match(Keywords::DEF)) {
         return false;
@@ -206,8 +184,12 @@ static bool parseMethod(ObjModule &module, Reader &reader) {
             .expect(Keywords::OPEN_BRACE);
     reader.match(Keywords::NEWLINE);
 
-    auto method = ObjMethod::make(methodName.data());
-    parseInsts(module, *method, reader);
+    LabelBuffer labels;
+    auto insts = parseInstructions(module, labels);
+
+    auto method = ObjMethod::make(ObjString::from(methodName), insts);
+    resolveLabels(labels, *method);
+
     module.addMethod(std::move(method));
 
     reader.expect(Keywords::CLOSE_BRACE);
@@ -215,7 +197,7 @@ static bool parseMethod(ObjModule &module, Reader &reader) {
     return true;
 }
 
-static bool parseModule(Vm &vm, Reader &reader) {
+bool Parser::parseModule(Vm &vm) {
     std::string className;
     reader.expect(Keywords::CLASS).expectId(className);
     reader.match(Keywords::NEWLINE);
@@ -224,7 +206,7 @@ static bool parseModule(Vm &vm, Reader &reader) {
 
     auto module = ObjModule::make(ObjString::from(className));
 
-    while (parseMethod(*module, reader)) {
+    while (parseMethod(*module)) {
         reader.match(Keywords::NEWLINE);
     }
 
@@ -235,12 +217,16 @@ static bool parseModule(Vm &vm, Reader &reader) {
 }
 
 std::unique_ptr<Vm> Parser::parse(const std::filesystem::path &path) {
-    Reader reader;
+    Parser parser(path);
+
+    auto vm = std::make_unique<Vm>();
+    parser.parseModule(*vm);
+    return vm;
+}
+
+Parser::Parser(const std::filesystem::path &path) {
     if (!reader.open(path.string())) {
         std::cerr << "File " << path << " wasn't open." << std::endl;
         throw std::invalid_argument("File isn't exist.");
     }
-    auto vm = std::make_unique<Vm>();
-    parseModule(*vm, reader);
-    return vm;
 }
