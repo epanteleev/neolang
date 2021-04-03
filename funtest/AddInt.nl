@@ -1,19 +1,19 @@
 class AddInt {
-	def main = {
-		iPUSH 2
-		iPUSH 3
-		iSTORE 0
-		iSTORE 1
-		CALLSTATIC AddInt::add
-		RET	
+	def main {
+		ipush 2
+		ipush 3
+		istore 0
+		istore 1
+		call AddInt::add
+		ret	
 	}
 
-	def add = {
-		iLOAD 1
-		iLOAD 0
-		iADD
-		iSTORE 0
-		CALLSTATIC Io::printInt
-		RET
+	def add {
+		iload 1
+		iload 0
+		iadd
+		istore 0
+		call Io::printInt
+		ret
 	}
 }

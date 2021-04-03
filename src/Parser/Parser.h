@@ -2,9 +2,9 @@
 #include <memory>
 #include <filesystem>
 #include <utility>
+#include <Vm/Vm.h>
 
-#include "Parser/Reader.h"
-#include "Vm/Vm.h"
+#include "Reader.h"
 
 class LabelBuffer;
 
@@ -24,24 +24,25 @@ private:
 
 class Parser final {
 public:
+
     static std::unique_ptr<Vm> parse(const std::filesystem::path &path);
 
 private:
-    explicit Parser(const std::filesystem::path &path);
-
+    Parser(const std::filesystem::path &path, Vm &vm);
     ~Parser() = default;
 
 private:
-    bool parseModule(Vm &vm);
+    bool parseModule();
 
     bool parseMethod(ObjModule &module);
 
-    InstList parseInstructions(ObjModule &module, LabelBuffer& labels);
+    InstructionList parseInstructions(LabelBuffer& labels);
 
     std::string parseLabel();
 
-    Instruction parseCallStatic(ObjModule &module);
+    Instruction parseCallStatic();
 
 private:
     Reader reader;
+    Vm &m_vm;
 };

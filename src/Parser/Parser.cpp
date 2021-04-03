@@ -1,6 +1,6 @@
 #include <iostream>
 #include <filesystem>
-#include "Parser/Parser.h"
+#include "Parser.h"
 
 class LabelBuffer final {
 public:
@@ -56,26 +56,24 @@ private:
 };
 
 bool resolveLabels(LabelBuffer& labels, ObjMethod& module) noexcept {
-    InstList& list = module.instList();
+    InstructionList& list = module.instList();
     for (auto& i: list) {
-        if (i.code() == OpCode::IF_EQ) {
-            i = Instruction(OpCode::IF_EQ, Value(labels.position(i.arg0().value()), Type::REF));
-        } else if (i.code() == OpCode::GOTO) {
-            i = Instruction(OpCode::GOTO, Value(labels.position(i.arg0().value()), Type::REF));
+        if (i.code() == OpCode::JUMP) {
+            i = Instruction(OpCode::JUMP, Value(labels.position(i.arg0().value()), Type::REF));
         }
     }
     return true;
 }
 
-Instruction Parser::parseCallStatic(ObjModule &module) {
+Instruction Parser::parseCallStatic() {
     std::string className, methodName;
     reader.expectId(className)
             .expect(Keywords::COLON)
             .expect(Keywords::COLON)
             .expectId(methodName);
 
-    size_t posCn = module.addStringConstant(ObjString::from(className));
-    size_t posCm = module.addStringConstant(ObjString::from(methodName));
+    size_t posCn = m_vm.addStringConstant(ObjString::from(className));
+    size_t posCm = m_vm.addStringConstant(ObjString::from(methodName));
     return Instruction(OpCode::CALLSTATIC, Value(posCn, Type::REF), Value(posCm, Type::REF));
 }
 
@@ -89,9 +87,9 @@ std::string Parser::parseLabel() {
     return label;
 }
 
-InstList Parser::parseInstructions(ObjModule &module, LabelBuffer& labels) {
+InstructionList Parser::parseInstructions(LabelBuffer& labels) {
     size_t ip = 0;
-    InstList instList;
+    InstructionList instList;
     while (true) {
         if (reader.match(Keywords::DOT)) {
             labels.add(parseLabel(), ip);
@@ -145,29 +143,26 @@ InstList Parser::parseInstructions(ObjModule &module, LabelBuffer& labels) {
             uint64_t i = reader.getULong();
             instList.emplace_back(OpCode::rPUSH, Value(i, Type::REF));
         } else if (instName == CALLSTATIC) {
-            instList.emplace_back(parseCallStatic(module));
+            instList.emplace_back(parseCallStatic());
         } else if (instName == RET) {
             instList.emplace_back(OpCode::RET);
         } else if (instName == LDC) {
             std::string string;
             reader.expectId(string);
-            size_t pos = module.addStringConstant(ObjString::from(string));
+            size_t pos = m_vm.addStringConstant(ObjString::from(string));
             instList.emplace_back(OpCode::LDC, Value(pos, Type::REF));
-        } else if (instName == IF_EQ) {
+        } else if (instName == JUMP) {
             std::string string;
             reader.expectId(string);
             size_t pos = labels.insert(std::move(string));
-            instList.emplace_back(OpCode::IF_EQ, Value(pos, Type::UNDEFINED));
-        } else if (instName == GOTO) {
-            std::string string;
-            reader.expectId(string);
-
-            size_t pos = labels.insert(std::move(string));
-            instList.emplace_back(OpCode::GOTO, Value(pos, Type::UNDEFINED));
+            instList.emplace_back(OpCode::JUMP, Value(pos, Type::UNDEFINED));
+        } else if (instName == CMPEQ) {
+            instList.emplace_back(OpCode::CMPEQ);
         } else {
             std::cerr << "Undefined instruction: " << instName << std::endl;
             UNREACHABLE();
         }
+
         ip += 1;
         reader.expect(Keywords::NEWLINE);
     }
@@ -185,9 +180,9 @@ bool Parser::parseMethod(ObjModule &module) {
     reader.match(Keywords::NEWLINE);
 
     LabelBuffer labels;
-    auto insts = parseInstructions(module, labels);
+    auto insts = parseInstructions(labels);
 
-    auto method = ObjMethod::make(ObjString::from(methodName), insts);
+    auto method = ObjMethod::make(ObjString::from(methodName), std::move(insts));
     resolveLabels(labels, *method);
 
     module.addMethod(std::move(method));
@@ -197,7 +192,7 @@ bool Parser::parseMethod(ObjModule &module) {
     return true;
 }
 
-bool Parser::parseModule(Vm &vm) {
+bool Parser::parseModule() {
     std::string className;
     reader.expect(Keywords::CLASS).expectId(className);
     reader.match(Keywords::NEWLINE);
@@ -212,21 +207,18 @@ bool Parser::parseModule(Vm &vm) {
 
     reader.expect(Keywords::CLOSE_BRACE);
 
-    vm.addModule(std::move(module));
+    m_vm.addModule(std::move(module));
     return true;
 }
 
 std::unique_ptr<Vm> Parser::parse(const std::filesystem::path &path) {
-    Parser parser(path);
-
     auto vm = std::make_unique<Vm>();
-    parser.parseModule(*vm);
+    Parser(path, *vm).parseModule();
     return vm;
 }
 
-Parser::Parser(const std::filesystem::path &path) {
+Parser::Parser(const std::filesystem::path &path, Vm& vm) : m_vm(vm) {
     if (!reader.open(path.string())) {
-        std::cerr << "File " << path << " wasn't open." << std::endl;
         throw std::invalid_argument("File isn't exist.");
     }
 }

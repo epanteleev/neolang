@@ -4,7 +4,7 @@
 #include <string>
 #include <tuple>
 
-#include "Parser/Keywords.h"
+#include "Keywords.h"
 
 // Todo: Change std::string to ObjString.
 class Reader final {

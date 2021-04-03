@@ -1,11 +1,15 @@
 #pragma once
 
 #include <vector>
+#include <list>
 
 #include "Vm/Value.h"
 #include "Vm/OpCode.h"
 
 struct Instruction {
+    Instruction() :
+        m_opCode(OpCode::UNDEFINED) {}
+
     explicit Instruction(OpCode code, Value val0, Value val1) :
             m_opCode(code),
             m_arg0(val0),
@@ -45,4 +49,6 @@ private:
     Value m_arg1;
 };
 
-using InstList = std::vector<Instruction>;
+using InstructionList = std::vector<Instruction>;
+
+using StreamInstruction = std::list<Instruction>;

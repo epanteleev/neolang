@@ -22,7 +22,9 @@ function runtest() {
 
 runtest funtest/AddInt.nl 5
 runtest funtest/PrintString.nl "HelloWorld"
-runtest funtest/AddFloat.nl 59
-runtest funtest/CMPTest.nl "Hello"
+runtest funtest/AddFloat.nl 5
+runtest funtest/IFTest.nl "HelloWorld"
 runtest funtest/ConcatString.nl "HelloWorld"
-runtest funtest/GotoTest.nl "HelloWORLD"
+runtest funtest/ifElseTest.nl "Hello"
+runtest funtest/ifElseTest1.nl "Hello hello"
+

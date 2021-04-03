@@ -1,24 +1,19 @@
 class AddFloat {
-	def main = {
-		fPUSH 2
-		fPUSH 3
-		fSTORE 0
-		fSTORE 1
-		CALLSTATIC AddFloat::add
-		fPUSH 4
-		fADD
-		fSTORE 0 
-		CALLSTATIC Io::printFloat
-		RET	
+	def main {
+		fpush 2.0
+		fpush 3.0
+		fstore 0
+		fstore 1
+		call AddFloat::add
+		fstore 0 
+		call Io::printFloat
+		ret
 	}
 
-	def add = {
-		fLOAD 1
-		fLOAD 0
-		fADD
-		fSTORE 0
-		CALLSTATIC Io::printFloat
-		fLOAD 0
-		fRET
+	def add {
+		fload 1
+		fload 0
+		fadd
+		fret
 	}
 }

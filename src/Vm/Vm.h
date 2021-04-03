@@ -78,12 +78,41 @@ public:
         ASSERT(!m_callStack.empty(), "CallStack is empty.");
         const auto frame = m_callStack.top();
         m_callStack.pop();
-        ASSERT(m_apiStack.size() == frame.savedSp(), "Frame non empty.");
+        if (m_apiStack.size() != frame.savedSp()) {
+            trace();
+            ASSERT(false, "Frame non empty.");
+        }
     }
 
     void trace();
 
     void vmError(const ObjString &message) noexcept;
+
+    inline void addConstants(StringBuffer &&strings) noexcept {
+        m_constantStrings = std::move(strings);
+    }
+    /**
+     * Insert given str to string pull.
+     * @return position str in string buffer.
+     */
+    inline size_t addStringConstant(ObjString &&str) noexcept {
+        m_constantStrings.push_back(std::move(str));
+        return m_constantStrings.size() - 1;
+    }
+
+    [[nodiscard]]
+    inline size_t sizeStringPool() const noexcept {
+        return m_constantStrings.size();
+    }
+
+    [[nodiscard]]
+    inline const ObjString *findString(size_t idx) const noexcept {
+        if (m_constantStrings.size() <= idx) {
+            return nullptr;
+        } else {
+            return &m_constantStrings[idx];
+        }
+    }
 
 private:
     /** Virtual stack of virtual machine. */
@@ -92,4 +121,5 @@ private:
 
     CallStack m_callStack;
     ModuleBuffer m_modules;
+    StringBuffer m_constantStrings{};
 };

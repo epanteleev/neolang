@@ -19,10 +19,10 @@
  */
 class ObjMethod : public ObjMethodBase {
 public:
-    explicit ObjMethod(ObjString methodName) :
+    explicit ObjMethod(ObjString&& methodName) :
             ObjMethodBase(std::move(methodName)) {}
 
-    explicit ObjMethod(ObjString methodName, InstList &instList) :
+    explicit ObjMethod(ObjString&& methodName, InstructionList &&instList) :
             ObjMethodBase(std::move(methodName)),
             m_instList(std::move(instList)) {}
 
@@ -35,7 +35,7 @@ public:
     }
 
     [[nodiscard]]
-    inline InstList &instList() noexcept {
+    inline InstructionList &instList() noexcept {
         return m_instList;
     }
 
@@ -47,15 +47,15 @@ public:
     VmResult apply(Vm &vm) noexcept override;
 
 public:
-    static std::unique_ptr<ObjMethod> make(ObjString name, InstList &instList) noexcept {
-        return std::make_unique<ObjMethod>(std::move(name), instList);
+    static std::unique_ptr<ObjMethod> make(ObjString&& name, InstructionList &&instList) noexcept {
+        return std::make_unique<ObjMethod>(std::move(name), std::move(instList));
     }
 
-    static std::unique_ptr<ObjMethod> make(ObjString name) noexcept {
+    static std::unique_ptr<ObjMethod> make(ObjString&& name) noexcept {
         return std::make_unique<ObjMethod>(std::move(name));
     }
 
 private:
-    InstList m_instList;
+    InstructionList m_instList;
 };
 

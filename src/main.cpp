@@ -1,10 +1,11 @@
 #include "Interpreter/Interpret.h"
 #include <iostream>
 #include <Vm/Allocator/Collector.h>
+#include <Parser/Parser.h>
 
 #include "Modules/BaseIO.h"
 #include "Modules/StringModule.h"
-#include "Parser/Parser.h"
+#include "Parser/NewParser.h"
 
 
 int main(int argv, char** args) {
@@ -15,7 +16,7 @@ int main(int argv, char** args) {
     std::filesystem::path file(args[1]);
     std::unique_ptr<Vm> vm;
     try {
-        vm = Parser::parse(file);
+        vm = NewParser::parse(file);
     } catch (ParseError& err) {
         std::cout << err.what() << std::endl;
         return 1;

@@ -5,13 +5,13 @@
 
 VmResult BaseIO::printInt(Vm &vm) noexcept {
     auto value = vm.load(0);
-    std::cout << value.toInt32();
+    std::cout << value.toInt32() << std::endl;
     return VmResult::SUCCESS;
 }
 
 VmResult BaseIO::printFloat(Vm &vm) noexcept {
     auto value = vm.load(0);
-    std::cout << value.toFloat32();
+    std::cout << value.toFloat32() << std::endl;
     return VmResult::SUCCESS;
 }
 
@@ -32,7 +32,7 @@ VmResult BaseIO::readFloat(Vm &vm) noexcept {
 VmResult BaseIO::printString(Vm &vm) noexcept {
     auto value = vm.load(0);
     ObjStringViewer ptr(value);
-    std::cout << ptr;
+    std::cout << ptr << std::endl;
     return VmResult::SUCCESS;
 }
 

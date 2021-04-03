@@ -7,6 +7,7 @@
  * @minium2
  */
 enum class OpCode : uint8_t {
+    UNDEFINED = 0,
     iADD,
     iSUB,
     iMUL,
@@ -31,7 +32,8 @@ enum class OpCode : uint8_t {
     rPUSH,
     rSTORE,
     RET,
-    IF_EQ,
+    CMPEQ,
+    JUMP,
     GOTO
 };
 
@@ -59,8 +61,9 @@ constexpr const char *RET        = "RET";
 constexpr const char *LDC        = "LDC";
 constexpr const char *rPUSH      = "rPUSH";
 constexpr const char *rSTORE     = "rSTORE";
-constexpr const char *IF_EQ      = "IF_EQ";
+constexpr const char *CMPEQ      = "CMPEQ";
 constexpr const char *UNDEFINED  = "UNDEFINED";
+constexpr const char *JUMP       = "JUMP";
 constexpr const char *GOTO       = "GOTO";
 
 inline constexpr const char *opCodeToString(OpCode opcode) noexcept {
@@ -86,8 +89,9 @@ inline constexpr const char *opCodeToString(OpCode opcode) noexcept {
         case OpCode::LDC:        return LDC;
         case OpCode::rPUSH:      return rPUSH;
         case OpCode::rSTORE:     return rSTORE;
-        case OpCode::IF_EQ:      return IF_EQ;
+        case OpCode::JUMP:       return JUMP;
         case OpCode::RET:        return RET;
+        case OpCode::CMPEQ:      return CMPEQ;
         case OpCode::GOTO:       return GOTO;
         default:                 return UNDEFINED;
     }

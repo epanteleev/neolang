@@ -48,6 +48,12 @@ public: // Conversions.
     }
 
     [[nodiscard]]
+    inline constexpr int32_t toBool() const noexcept {
+        ASSERT(m_type == Type::BOOL, "Invalid cast.");
+        return (bool) (m_value);
+    }
+
+    [[nodiscard]]
     inline constexpr uint64_t toUint64() const noexcept {
         ASSERT(m_type == Type::UINT64, "Invalid cast.");
         return (uint64_t) (m_value);

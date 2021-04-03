@@ -10,6 +10,7 @@ enum class Type : uint8_t {
     UINT64,
     FLOAT32,
     FLOAT64,
+    BOOL,
     REF
 };
 
@@ -18,6 +19,7 @@ constexpr const char *I32 = "i32";
 constexpr const char *REF = "ref";
 constexpr const char *F32 = "f32";
 constexpr const char *UD  = "ud";
+constexpr const char *BOOL  = "bool";
 
 inline constexpr const char *typeToString(Type type) noexcept {
     switch (type) {
@@ -25,6 +27,7 @@ inline constexpr const char *typeToString(Type type) noexcept {
         case Type::REF:     return REF;
         case Type::FLOAT32: return F32;
         case Type::UINT64:  return U64;
+        case Type::BOOL:    return BOOL;
         default:            return UD;
     }
 }

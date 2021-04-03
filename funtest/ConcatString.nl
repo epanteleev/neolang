@@ -1,12 +1,12 @@
 class ConcatString {
-	def main = {
-		LDC Hello
-		rSTORE 0
-		LDC World
-		rSTORE 1
-		CALLSTATIC String::concat
-		rSTORE 0
-		CALLSTATIC Io::printString	
-		RET
+	def main {
+		ldc "Hello"
+		rstore 0
+		ldc "World"
+		rstore 1
+		call String::concat
+		rstore 0
+		call Io::printString	
+		ret
 	}
 }

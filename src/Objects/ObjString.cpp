@@ -6,7 +6,6 @@
 #include <cstring>
 
 struct FlatString {
-    size_t rtti;
     size_t length;
     char cstr[0];
 
@@ -17,7 +16,6 @@ struct FlatString {
     inline void operator delete(void *ptr) {
         DefaultAllocator::Delete(ptr);
     }
-
 };
 
 static FlatString* concat(const char* s1, size_t len1, const char* s2, size_t len2) {

@@ -1,8 +1,8 @@
 class PrintString {
-	def main = {
-		LDC HelloWorld
-		rSTORE 0
-		CALLSTATIC Io::printString
-		RET
+	def main {
+		ldc "HelloWorld"
+		rstore 0
+		call Io::printString
+		ret
 	}
 }

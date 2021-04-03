@@ -62,7 +62,8 @@ INTERPRET(fRet)
 INTERPRET(ldc)
 INTERPRET(rPush)
 INTERPRET(rStore)
-INTERPRET(IfCmp)
+INTERPRET(Cmp)
+INTERPRET(Jump)
 INTERPRET(Goto)
 
 static VmResult callMethod(Vm &vm, const ObjString &moduleName, const ObjString &methodName) noexcept {
@@ -97,7 +98,8 @@ inline VmResult callInstruction(Vm &vm, OpCode opcode) noexcept {
         CASE(LDC,        ldc)
         CASE(rSTORE,     rStore)
         CASE(rPUSH,      rPush)
-        CASE(IF_EQ,      IfCmp)
+        CASE(CMPEQ,      Cmp)
+        CASE(JUMP,       Jump)
         CASE(GOTO,       Goto)
         default: TERMINATE(false, "Undefined instruction: %s", opCodeToString(opcode));
     }
@@ -137,12 +139,11 @@ APPLY(Invoke) {
 APPLY(CallStatic) {
     Frame frame = vm.frame();
     Instruction inst = frame.inst();
-    const auto &module = dynamic_cast<const ObjModule &>(frame.method().module());
 
-    const ObjString *moduleName = module.findString(inst.arg0().value());
+    const ObjString *moduleName = vm.findString(inst.arg0().value());
     TERMINATE(moduleName != nullptr, "No found module name.");
 
-    const ObjString *methodName = module.findString(inst.arg1().value());
+    const ObjString *methodName = vm.findString(inst.arg1().value());
     TERMINATE(methodName != nullptr, "No found method name.");
 
     return callMethod(vm, *moduleName, *methodName);
@@ -151,9 +152,8 @@ APPLY(CallStatic) {
 APPLY(New) {
     Frame frame = vm.frame();
     Instruction inst = frame.inst();
-    const auto &module = frame.currentModule();
 
-    const ObjString *moduleName = module.findString(inst.arg0().value());
+    const ObjString *moduleName = vm.findString(inst.arg0().value());
     TERMINATE(moduleName != nullptr, "No found module name.");
 
     return callMethod(vm, *moduleName, "<new>");
@@ -319,8 +319,7 @@ APPLY(fLoad) {
 APPLY(ldc) {
     Frame frame = vm.frame();
     Instruction inst = frame.inst();
-    const auto &module = frame.currentModule();
-    const auto *string = module.findString(inst.arg0().value());
+    const auto *string = vm.findString(inst.arg0().value());
     TERMINATE(string != nullptr, "String no found.");
     vm.stack().push(string->value());
     return VmResult::SUCCESS;
@@ -346,19 +345,26 @@ APPLY(rStore) {
     return VmResult::SUCCESS;
 }
 
-APPLY(IfCmp) {
-    const auto instruction = vm.frame().inst();
-    const auto ip = instruction.arg0();
+APPLY(Cmp) {
     const auto a = vm.stack().pop();
     const auto b = vm.stack().pop();
-    if (a == b) {
-        vm.frame().gotoInst(ip.value() - 1);
+    vm.stack().push(Value(a == b, Type::BOOL));
+    return VmResult::SUCCESS;
+}
+
+APPLY(Jump) {
+    const auto instruction = vm.frame().inst();
+    const auto ip = instruction.arg0();
+
+    const auto cond = vm.stack().pop();
+    if (!cond.toBool()) {
+        vm.frame().gotoInst(ip.value());
     }
     return VmResult::SUCCESS;
 }
 
 APPLY(Goto) {
     const auto ip = vm.frame().inst().arg0();
-    vm.frame().gotoInst(ip.value() - 1);
+    vm.frame().gotoInst(ip.value());
     return VmResult::SUCCESS;
 }

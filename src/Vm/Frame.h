@@ -29,7 +29,7 @@ public:
     }
 
     inline void gotoInst(size_t ip) noexcept {
-        m_ip = ip;
+        m_ip += ip;
     }
 
     [[nodiscard]]

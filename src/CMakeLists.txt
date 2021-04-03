@@ -1,11 +1,31 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.7)
 project(neolang)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 set(CMAKE_CXX_STANDARD 20)
 
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
-endif()
+# required if linking to static library
+add_definitions(-DANTLR4CPP_STATIC)
+
+# using /MD flag for antlr4_runtime (for Visual C++ compilers only)
+set(ANTLR4_WITH_STATIC_CRT OFF)
+# add external build for antlrcpp
+include(ExternalAntlr4Cpp)
+# add antrl4cpp artifacts to project environment
+include_directories(${ANTLR4_INCLUDE_DIRS})
+
+set(ANTLR_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/tools/antlr-4.9.1-complete.jar)
+# add macros to generate ANTLR Cpp code from grammar
+find_package(ANTLR REQUIRED)
+
+include_directories( ${ANTLR4CPP_INCLUDE_DIRS} )
+
+# Call macro to add lexer and grammar to your build dependencies.
+antlr_target(GrammarParser ${PROJECT_SOURCE_DIR}/Parser/grammar/Grammar.g4 VISITOR OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/generated/)
+
+# add our project source directories
+include_directories(${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/generated/)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
@@ -30,12 +50,15 @@ file(GLOB VM_HEADERS Vm/*.h)
 file(GLOB MODULES_SOURCES Modules/*.cpp)
 file(GLOB MODULES_HEADERS Modules/*.h)
 
-file(GLOB PARSER_SOURCES Parser/*.cpp)
-file(GLOB PARSER_HEADERS Parser/*.h)
+file(GLOB PARSER_SOURCES Parser/*.cpp )
+file(GLOB PARSER_HEADERS Parser/*.h )
 
 add_executable(${PROJECT_NAME} main.cpp ${OBJECTS_SOURCES} ${OBJECTS_HEADERS}
         ${INTERPRETER_SOURCES} ${INTERPRETER_HEADERS}
         ${VM_SOURCES} ${VM_HEADERS}
         ${MODULES_SOURCES} ${MODULES_HEADERS}
         ${PARSER_SOURCES} ${PARSER_HEADERS}
+        ${ANTLR_GrammarParser_CXX_OUTPUTS}
         Vm/Allocator/DefaultAllocator.cpp Vm/Allocator/DefaultAllocator.h Vm/Allocator/Collector.cpp Vm/Allocator/Collector.h Vm/Allocator/RootSet.cpp Vm/Allocator/RootSet.h Parser/Keywords.h)
+
+target_link_libraries(${PROJECT_NAME} antlr4_static ${SYSTEM_LIBS})
