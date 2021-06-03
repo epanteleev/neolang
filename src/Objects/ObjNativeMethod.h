@@ -6,7 +6,7 @@
 #include "Objects/Object.h"
 #include "Objects/ObjMethodBase.h"
 
-using Native = std::function<VmResult(Vm &)>;
+using Native = std::function<VmResult(Environment &)>;
 
 /**
  * Represent native method of programming language.
@@ -32,7 +32,17 @@ public:
      * Call this method.
      * @return result of work this method.
      */
-    VmResult apply(Vm &vm) noexcept override;
+    VmResult apply(Environment &env) noexcept override;
+
+    [[nodiscard]]
+    ObjMethod& asMethod() const noexcept override {
+        UNREACHABLE();
+    }
+
+    [[nodiscard]]
+    inline ObjNativeMethod& asNativeMethod() const noexcept override {
+        return static_cast<ObjNativeMethod&>(const_cast<ObjNativeMethod &>(*this));
+    }
 
     [[nodiscard]]
     inline bool isNative() const noexcept override { return true; }

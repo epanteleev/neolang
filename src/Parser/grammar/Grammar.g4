@@ -19,9 +19,12 @@ instructionsDecl
     ;
 
 instruction
-    : (IADD | ISUB | IDIV | IMUL | RET)
+    : (IADD | ISUB | IDIV | IMUL | IRET)
     | (FADD | FSUB | FDIV | FMUL | FRET)
+    | (OR | AND)
     | CMPEQ
+    | SWAP
+    | RET
     | call
     | instructionsWithOp
     ;
@@ -58,6 +61,7 @@ IPUSH    : 'ipush';
 IPOP     : 'ipop';
 ILOAD    : 'iload';
 ISTORE   : 'istore';
+IRET     : 'iret';
 
 FADD     : 'fadd';
 FSUB     : 'fsub';
@@ -69,6 +73,11 @@ FLOAD    : 'fload';
 FSTORE   : 'fstore';
 FRET     : 'fret';
 LDC      : 'ldc';
+SWAP     : 'swap';
+
+
+AND      : 'and';
+OR       : 'or';
 
 RSTORE   : 'rstore';
 CMPEQ    : 'cmpeq';

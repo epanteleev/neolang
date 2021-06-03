@@ -15,11 +15,9 @@ include(ExternalAntlr4Cpp)
 # add antrl4cpp artifacts to project environment
 include_directories(${ANTLR4_INCLUDE_DIRS})
 
-set(ANTLR_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/tools/antlr-4.9.1-complete.jar)
+set(ANTLR_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/../tools/antlr-4.9.1-complete.jar)
 # add macros to generate ANTLR Cpp code from grammar
 find_package(ANTLR REQUIRED)
-
-include_directories( ${ANTLR4CPP_INCLUDE_DIRS} )
 
 # Call macro to add lexer and grammar to your build dependencies.
 antlr_target(GrammarParser ${PROJECT_SOURCE_DIR}/Parser/grammar/Grammar.g4 VISITOR OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/generated/)
@@ -57,8 +55,8 @@ add_executable(${PROJECT_NAME} main.cpp ${OBJECTS_SOURCES} ${OBJECTS_HEADERS}
         ${INTERPRETER_SOURCES} ${INTERPRETER_HEADERS}
         ${VM_SOURCES} ${VM_HEADERS}
         ${MODULES_SOURCES} ${MODULES_HEADERS}
-        ${PARSER_SOURCES} ${PARSER_HEADERS}
+         ${PARSER_SOURCES} ${PARSER_HEADERS}
         ${ANTLR_GrammarParser_CXX_OUTPUTS}
-        Vm/Allocator/DefaultAllocator.cpp Vm/Allocator/DefaultAllocator.h Vm/Allocator/Collector.cpp Vm/Allocator/Collector.h Vm/Allocator/RootSet.cpp Vm/Allocator/RootSet.h Parser/Keywords.h)
+        Vm/Allocator/DefaultAllocator.cpp Vm/Allocator/DefaultAllocator.h Vm/Allocator/Collector.cpp Vm/Allocator/Collector.h Vm/Allocator/RootSet.cpp Vm/Allocator/RootSet.h)
 
 target_link_libraries(${PROJECT_NAME} antlr4_static ${SYSTEM_LIBS})

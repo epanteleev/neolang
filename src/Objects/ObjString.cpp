@@ -7,6 +7,7 @@
 
 struct FlatString {
     size_t length;
+    uint32_t hash;
     char cstr[0];
 
     inline void *operator new(size_t size, size_t length) {
@@ -15,6 +16,24 @@ struct FlatString {
 
     inline void operator delete(void *ptr) {
         DefaultAllocator::Delete(ptr);
+    }
+
+    static uint32_t jenkins_one_at_a_time_hash(const char *key, std::size_t len) {
+        uint32_t hash, i;
+        for(hash = i = 0; i < len; ++i)
+        {
+            hash += key[i];
+            hash += (hash << 10);
+            hash ^= (hash >> 6);
+        }
+        hash += (hash << 3);
+        hash ^= (hash >> 11);
+        hash += (hash << 15);
+        return hash;
+    }
+
+    inline void calcHash() {
+        hash = jenkins_one_at_a_time_hash(cstr, length);
     }
 };
 
@@ -26,6 +45,7 @@ static FlatString* concat(const char* s1, size_t len1, const char* s2, size_t le
     std::copy(s2, s2 + len2, result->cstr + len1);
     result->cstr[len] = '\0';
     result->length = len;
+    result->calcHash();
     return result;
 }
 
@@ -38,6 +58,7 @@ ObjString::ObjString(const char *c) {
     m_string->length = length;
     std::copy(c, c + length, m_string->cstr);
     m_string->cstr[length] = '\0';
+    m_string->calcHash();
 }
 
 ObjString::ObjString(const ObjString &s) {
@@ -46,6 +67,7 @@ ObjString::ObjString(const ObjString &s) {
     std::copy(s.m_string->cstr, s.m_string->cstr + s.m_string->length, m_string->cstr);
     m_string->length = length;
     m_string->cstr[length] = '\0';
+    m_string->calcHash();
 }
 
 
@@ -75,6 +97,7 @@ ObjString &ObjString::operator=(const ObjString &s) {
     m_string = new(length) FlatString();
     std::copy(s.m_string->cstr, s.m_string->cstr + length, m_string->cstr);
     m_string->length = length;
+    m_string->calcHash();
     return *this;
 }
 
@@ -87,6 +110,7 @@ ObjString &ObjString::operator+=(const ObjString &s) {
     str->cstr[len] = '\0';
     reset();
     m_string = str;
+    m_string->calcHash();
     return *this;
 }
 
@@ -95,7 +119,11 @@ ObjString operator+(const ObjString &s1, const ObjString &s2) {
 }
 
 bool operator==(const ObjString &lhs, const ObjString &rhs) {
-    return strcmp(lhs.m_string->cstr, rhs.m_string->cstr) == 0;
+    if (lhs.m_string->hash != rhs.m_string->hash) {
+        return false;
+    } else {
+        return strcmp(lhs.m_string->cstr, rhs.m_string->cstr) == 0;
+    }
 }
 
 bool operator==(const ObjString &lhs, const char *rhs) {
@@ -128,6 +156,7 @@ ObjString &ObjString::operator=(const char *s) {
     std::copy(s, s + length, m_string->cstr);
     m_string->cstr[length] = '\0';
     m_string->length = length;
+    m_string->calcHash();
     return *this;
 }
 
@@ -153,6 +182,7 @@ ObjString ObjString::from(const std::string &string) {
     str->cstr[str->length] = '\0';
     ObjString result{};
     result.m_string = str;
+    result.m_string->calcHash();
     return result;
 }
 
@@ -161,7 +191,6 @@ void ObjString::reset() noexcept {
         return;
     }
     delete m_string;
-    m_string = nullptr;
 }
 
 ObjString operator+(const char *s1, const ObjString &s2) {

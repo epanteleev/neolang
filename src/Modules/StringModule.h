@@ -12,7 +12,7 @@ class StringModule final : public ObjNativeModule {
 public:
     StringModule() : ObjNativeModule("String") {}
 
-    static VmResult concat(Vm& vm) noexcept;
+    static VmResult concat(Environment& vm) noexcept;
 
 public:
     static std::unique_ptr<ObjNativeModule> makeModule() noexcept {

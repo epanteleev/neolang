@@ -5,7 +5,6 @@
 #include "Objects/Object.h"
 #include "Objects/ObjFrwd.h"
 
-
 class ObjMethodBase : public Object {
 public:
     explicit ObjMethodBase(ObjString methodName) :
@@ -29,7 +28,13 @@ public:
     [[nodiscard]]
     virtual bool isNative() const noexcept = 0;
 
-    virtual VmResult apply(Vm &vm) noexcept = 0;
+    [[nodiscard]]
+    virtual ObjMethod& asMethod() const noexcept = 0;
+
+    [[nodiscard]]
+    virtual ObjNativeMethod& asNativeMethod() const noexcept = 0;
+
+    virtual VmResult apply(Environment &vm) noexcept = 0;
 
     inline void setModule(ObjModuleBase *module) noexcept {
         m_module = module;

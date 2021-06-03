@@ -2,33 +2,26 @@
 
 #include <stack>
 
-#include "Objects/ObjMethod.h"
+#include "Objects/ObjMethodBase.h"
+#include "Vm/Instruction.h"
 
 class Frame final {
 public:
-    explicit Frame(ObjMethodBase &method, size_t sp) :
+    explicit Frame(ObjMethodBase &method, std::size_t sp) :
             m_method(method),
             m_ip(0),
             m_sp(sp) {}
 
-    [[nodiscard]]
-    inline Instruction inst() const noexcept {
-        ASSERT(!m_method.isNative(), "Try executed native method.");
-        return static_cast<ObjMethod &>(m_method).instList()[static_cast<size_t>(m_ip)];
-    }
+    Instruction inst() noexcept;
 
     [[nodiscard]]
-    inline bool hasNext() const noexcept {
-        ASSERT(!m_method.isNative(), "Try executed native method.");
-        ASSERT(m_ip >= 0, "Invalid ip.");
-        return static_cast<size_t>(m_ip) < static_cast<ObjMethod &>(m_method).instList().size();
-    }
+    bool hasNext() const noexcept;
 
     inline void next() noexcept {
         m_ip++;
     }
 
-    inline void gotoInst(size_t ip) noexcept {
+    inline void gotoInst(std::size_t ip) noexcept {
         m_ip += ip;
     }
 
@@ -38,19 +31,12 @@ public:
     }
 
     [[nodiscard]]
-    inline size_t savedSp() const noexcept {
+    inline std::size_t savedSp() const noexcept {
         return m_sp;
-    }
-
-    [[nodiscard]]
-    inline const ObjModule& currentModule() const noexcept {
-        return dynamic_cast<const ObjModule&>(m_method.module());
     }
 
 private:
     ObjMethodBase &m_method;
     int64_t m_ip;
-    const size_t m_sp;
+    const std::size_t m_sp;
 };
-
-using CallStack = std::stack<Frame>;

@@ -1,6 +1,6 @@
 #include <generated/GrammarParser.h>
 #include <generated/GrammarBaseVisitor.h>
-#include "VisitorImpl.h"
+#include "Parser/VisitorImpl.h"
 
 antlrcpp::Any VisitorImpl::visitCompilationUnit(GrammarParser::CompilationUnitContext *ctx) {
     return visitClassDeclaration(ctx->classDeclaration());
@@ -15,7 +15,7 @@ antlrcpp::Any VisitorImpl::visitClassDeclaration(GrammarParser::ClassDeclaration
     for (auto& i: methods) {
         module->addMethod(visitMethodDeclarationOverride(i));
     }
-    m_vm.addModule(std::move(module));
+    Vm::registerModule(std::move(module));
     return antlrcpp::Any();
 }
 
@@ -23,7 +23,7 @@ std::unique_ptr<ObjMethod> VisitorImpl::visitMethodDeclarationOverride(GrammarPa
     std::string str = ctx->IDENTIFIER()->toString();
     auto methodName = ObjString::from(str);
 
-    StreamInstruction list = visitInstructionsDecl(ctx->instructionsDecl());
+    StreamInstruction list = visitInstructionsDecl(ctx->instructionsDecl()).as<StreamInstruction>();
     InstructionList v{std::make_move_iterator(std::begin(list)), std::make_move_iterator(std::end(list)) };
     return ObjMethod::make(std::move(methodName), std::move(v));
 }
@@ -34,27 +34,27 @@ antlrcpp::Any VisitorImpl::visitInstructionsDecl(GrammarParser::InstructionsDecl
         return list;
     }
     if (ctx->instruction() != nullptr) {
-        list.push_back(visitInstruction(ctx->instruction()));
+        list.push_back(visitInstruction(ctx->instruction()).as<Instruction>());
     } else if (ctx->ifBlock()) {
-        StreamInstruction ifBlock = visitIfBlock(ctx->ifBlock());
+        StreamInstruction ifBlock = visitIfBlock(ctx->ifBlock()).as<StreamInstruction>();
 
         if (ctx->elseBlock()) {
-            StreamInstruction elseBlock = visitElseBlock(ctx->elseBlock());
+            StreamInstruction elseBlock = visitElseBlock(ctx->elseBlock()).as<StreamInstruction>();
 
-            list.emplace_back(OpCode::JUMP, Value(ifBlock.size() + 1, Type::REF));
+            list.emplace_back(OpCode::JUMP, Value(ifBlock.size() + 1, Value::Type::REF));
             std::move(ifBlock.begin(), ifBlock.end(), std::back_inserter(list));
 
-            list.emplace_back(OpCode::GOTO, Value(elseBlock.size(), Type::REF));
+            list.emplace_back(OpCode::GOTO, Value(elseBlock.size(), Value::Type::REF));
 
             std::move(elseBlock.begin(), elseBlock.end(), std::back_inserter(list));
 
         } else {
-            list.emplace_back(OpCode::JUMP, Value(ifBlock.size(), Type::REF));
+            list.emplace_back(OpCode::JUMP, Value(ifBlock.size(), Value::Type::REF));
             std::move(ifBlock.begin(), ifBlock.end(), std::back_inserter(list));
         }
     }
 
-    StreamInstruction nextList = VisitorImpl::visitInstructionsDecl(ctx->instructionsDecl());
+    StreamInstruction nextList = VisitorImpl::visitInstructionsDecl(ctx->instructionsDecl()).as<StreamInstruction>();
     std::move(nextList.begin(), nextList.end(), std::back_inserter(list)); //todo
     return list;
 }
@@ -78,6 +78,14 @@ antlrcpp::Any VisitorImpl::visitInstruction(GrammarParser::InstructionContext *c
         return Instruction(OpCode::fRET);
     } else if (ctx->CMPEQ()) {
         return Instruction(OpCode::CMPEQ);
+    } else if (ctx->AND()) {
+        return Instruction(OpCode::AND);
+    } else if (ctx->OR()) {
+        return Instruction(OpCode::OR);
+    } else if (ctx->IRET()) {
+        return Instruction(OpCode::iRET);
+    } else if (ctx->SWAP()) {
+        return Instruction(OpCode::SWAP);
     }
 
     if (ctx->call()) {
@@ -103,8 +111,8 @@ antlrcpp::Any VisitorImpl::visitInstructionsWithOp(GrammarParser::InstructionsWi
         return Instruction(OpCode::fLOAD, std::stoi(ctx->DECIMAL_LITERAL()->toString()));
     } else if (ctx->LDC()) {
         auto str = ctx->STRING_LITERAL()->toString();
-        size_t pos = m_vm.addStringConstant(ObjString::from(str.substr(1, str.size() - 2)));
-        return Instruction(OpCode::LDC, Value(pos, Type::REF));
+        size_t pos = Vm::addStringConstant(ObjString::from(str.substr(1, str.size() - 2)));
+        return Instruction(OpCode::LDC, Value(pos, Value::Type::REF));
     } else if (ctx->RSTORE()) {
         return Instruction(OpCode::rSTORE,std::stol(ctx->DECIMAL_LITERAL()->getText()));
     }
@@ -114,9 +122,9 @@ antlrcpp::Any VisitorImpl::visitInstructionsWithOp(GrammarParser::InstructionsWi
 antlrcpp::Any VisitorImpl::visitCall(GrammarParser::CallContext *ctx) {
     auto called = ctx->IDENTIFIER();
 
-    size_t posCn = m_vm.addStringConstant(ObjString::from(called[0]->toString()));
-    size_t posCm = m_vm.addStringConstant(ObjString::from(called[1]->toString()));
-    return Instruction(OpCode::CALLSTATIC, Value(posCn, Type::REF), Value(posCm, Type::REF));
+    size_t posCn = Vm::addStringConstant(ObjString::from(called[0]->toString()));
+    size_t posCm = Vm::addStringConstant(ObjString::from(called[1]->toString()));
+    return Instruction(OpCode::CALL, Value(posCn, Value::Type::REF), Value(posCm, Value::Type::REF));
 }
 
 antlrcpp::Any VisitorImpl::visitIfBlock(GrammarParser::IfBlockContext *ctx) {

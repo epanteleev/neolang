@@ -1,11 +1,12 @@
 #include <string>
-#include <Vm/Vm.h>
 #include "antlr4-runtime.h"
+
 #include "generated/GrammarBaseVisitor.h"
+#include "Vm/Vm.h"
 
 class VisitorImpl : public GrammarBaseVisitor {
 public:
-    explicit VisitorImpl(Vm &vm) : m_vm(vm) {}
+    VisitorImpl() = default;
 
     antlrcpp::Any visitCompilationUnit(GrammarParser::CompilationUnitContext *ctx) override;
 
@@ -24,8 +25,5 @@ public:
     antlrcpp::Any visitIfBlock(GrammarParser::IfBlockContext *ctx) override;
 
     antlrcpp::Any visitElseBlock(GrammarParser::ElseBlockContext *ctx) override;
-
-private:
-    Vm &m_vm;
 };
 

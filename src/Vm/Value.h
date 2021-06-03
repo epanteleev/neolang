@@ -1,14 +1,32 @@
 #pragma once
 #include <limits>
-
+#include <cinttypes>
+#include "Vm/Common.h"
 #include "Objects/ObjFrwd.h"
-#include "Vm/Type.h"
 
 /**
  * Represent value in virtual machine.
  * @author minium2
  */
-class Value {
+class Value final {
+public:
+    enum class Type : uint8_t {
+        UNDEFINED,
+        INT32,
+        UINT64,
+        FLOAT32,
+        FLOAT64,
+        BOOL,
+        REF
+    };
+
+    static constexpr const char *U64 = "u64";
+    static constexpr const char *I32 = "i32";
+    static constexpr const char *REF = "ref";
+    static constexpr const char *F32 = "f32";
+    static constexpr const char *UD  = "ud";
+    static constexpr const char *BOOL  = "bool";
+
 public:
     constexpr explicit Value() :
             m_value(std::numeric_limits<uint64_t>::max()),
@@ -93,6 +111,17 @@ public:
 
     inline constexpr bool operator<(uint64_t value) const noexcept {
         return (m_type == Type::INT32) && m_value < value;
+    }
+
+    inline constexpr const char * typeToString() const noexcept {
+        switch (m_type) {
+            case Type::INT32:   return I32;
+            case Type::REF:     return REF;
+            case Type::FLOAT32: return F32;
+            case Type::UINT64:  return U64;
+            case Type::BOOL:    return BOOL;
+            default:            return UD;
+        }
     }
 
 private:

@@ -81,12 +81,12 @@ public:
 public:
     [[nodiscard]]
     inline Value value() const noexcept {
-        return Value((uintptr_t) m_string, Type::REF);
+        return Value((uintptr_t) m_string, Value::Type::REF);
     }
 
     [[nodiscard]]
     inline Value toValueAndRelease() noexcept {
-        return Value((uintptr_t) std::exchange(m_string, nullptr), Type::REF);
+        return Value((uintptr_t) std::exchange(m_string, nullptr), Value::Type::REF);
     }
 
 public:

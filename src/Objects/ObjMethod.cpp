@@ -1,8 +1,8 @@
 #include "Objects/ObjMethod.h"
 #include "Vm/Vm.h"
 
-VmResult ObjMethod::apply(Vm &vm) noexcept {
-    size_t sp = vm.stack().size();
-    vm.callStack().push(Frame(*this, sp));
+VmResult ObjMethod::apply(Environment &env) noexcept {
+    size_t sp = env.stack().size();
+    env.callStack().enter(*this, sp);
     return VmResult::SUCCESS;
 }

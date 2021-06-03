@@ -2,14 +2,12 @@
 
 #include <vector>
 #include <list>
+#include <sstream>
 
 #include "Vm/Value.h"
 #include "Vm/OpCode.h"
 
 struct Instruction {
-    Instruction() :
-        m_opCode(OpCode::UNDEFINED) {}
-
     explicit Instruction(OpCode code, Value val0, Value val1) :
             m_opCode(code),
             m_arg0(val0),
@@ -25,7 +23,7 @@ struct Instruction {
             m_arg0(Value()),
             m_arg1(Value()) {}
 
-    Instruction& operator=(const Instruction& inst) noexcept = default;
+    Instruction& operator=(const Instruction& inst) noexcept = delete;
 
 public:
     [[nodiscard]]
@@ -41,6 +39,14 @@ public:
     [[nodiscard]]
     inline Value arg1() const noexcept {
         return m_arg1;
+    }
+
+public:
+    [[nodiscard]]
+    std::string toString() const {
+        std::stringstream stream;
+        stream << opCodeToString(m_opCode);
+        return stream.str();
     }
 
 private:

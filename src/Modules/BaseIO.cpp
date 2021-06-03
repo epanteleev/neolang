@@ -3,34 +3,34 @@
 #include "Vm/Vm.h"
 #include <iostream>
 
-VmResult BaseIO::printInt(Vm &vm) noexcept {
-    auto value = vm.load(0);
+VmResult BaseIO::printInt(Environment &env) noexcept {
+    auto value = env.locals().load(0);
     std::cout << value.toInt32() << std::endl;
     return VmResult::SUCCESS;
 }
 
-VmResult BaseIO::printFloat(Vm &vm) noexcept {
-    auto value = vm.load(0);
+VmResult BaseIO::printFloat(Environment &env) noexcept {
+    auto value = env.locals().load(0);
     std::cout << value.toFloat32() << std::endl;
     return VmResult::SUCCESS;
 }
 
-VmResult BaseIO::readInt(Vm &vm) noexcept {
+VmResult BaseIO::readInt(Environment &env) noexcept {
     int i = 0;
     std::cin >> i;
-    vm.stack().push(Value(i));
+    env.stack().push(Value(i));
     return VmResult::SUCCESS;
 }
 
-VmResult BaseIO::readFloat(Vm &vm) noexcept {
+VmResult BaseIO::readFloat(Environment &env) noexcept {
     float i = 0;
     std::cin >> i;
-    vm.stack().push(Value(i));
+    env.stack().push(Value(i));
     return VmResult::SUCCESS;
 }
 
-VmResult BaseIO::printString(Vm &vm) noexcept {
-    auto value = vm.load(0);
+VmResult BaseIO::printString(Environment &env) noexcept {
+    auto value = env.locals().load(0);
     ObjStringViewer ptr(value);
     std::cout << ptr << std::endl;
     return VmResult::SUCCESS;

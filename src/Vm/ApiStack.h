@@ -9,7 +9,7 @@
  */
 class ApiStack final {
 private:
-    static constexpr size_t MAX_STACK_SIZE = 64;
+    static constexpr size_t MAX_STACK_SIZE = 256;
 
 public:
     ApiStack() = default;
@@ -26,18 +26,9 @@ public:
         return m_sp;
     }
 
-    inline void drop(size_t sp) noexcept {
-        m_sp = sp;
-    }
-
     inline Value pop() noexcept {
         ASSERT(m_sp != 0, "ApiStack is empty.");
         return m_stack[--m_sp];
-    }
-
-    [[nodiscard]]
-    inline Value top() const noexcept {
-        return m_stack[m_sp - 1];
     }
 
     [[nodiscard]]
@@ -53,6 +44,13 @@ public:
     inline void push(Value value) noexcept {
         ASSERT(m_sp + 1 != MAX_STACK_SIZE, "ApiStack is full.");
         m_stack[m_sp] = value;
+        m_sp++;
+    }
+
+    template<typename... Arg>
+    void emplace(Arg&&... value) noexcept {
+        ASSERT(m_sp + 1 != MAX_STACK_SIZE, "ApiStack is full.");
+        m_stack[m_sp] = Value(std::forward<Arg>(value)...); //Todo maybe std::launder???
         m_sp++;
     }
 

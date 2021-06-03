@@ -44,7 +44,17 @@ public:
         return false;
     }
 
-    VmResult apply(Vm &vm) noexcept override;
+    [[nodiscard]]
+    inline ObjMethod& asMethod() const noexcept override {
+        return static_cast<ObjMethod&>(const_cast<ObjMethod &>(*this));
+    }
+
+    [[nodiscard]]
+    ObjNativeMethod& asNativeMethod() const noexcept override {
+        UNREACHABLE();
+    }
+
+    VmResult apply(Environment &vm) noexcept override;
 
 public:
     static std::unique_ptr<ObjMethod> make(ObjString&& name, InstructionList &&instList) noexcept {

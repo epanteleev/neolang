@@ -1,11 +1,10 @@
-#include "Interpreter/Interpret.h"
+#include "Interpreter/BaselineInterpreter.h"
 #include <iostream>
 #include <Vm/Allocator/Collector.h>
-#include <Parser/Parser.h>
 
 #include "Modules/BaseIO.h"
 #include "Modules/StringModule.h"
-#include "Parser/NewParser.h"
+#include "Parser/Parser.h"
 
 
 int main(int argv, char** args) {
@@ -14,19 +13,17 @@ int main(int argv, char** args) {
         return 1;
     }
     std::filesystem::path file(args[1]);
-    std::unique_ptr<Vm> vm;
-    try {
-        vm = NewParser::parse(file);
-    } catch (ParseError& err) {
-        std::cout << err.what() << std::endl;
-        return 1;
-    }
 
-    vm->addModule(BaseIO::makeModule());
-    vm->addModule(StringModule::makeModule());
-    if(Interpret::apply(file.stem().string().data(), *vm) != VmResult::SUCCESS) {
-        vm->trace();
+    Parser::parse(file);
+
+    Vm::registerModule(BaseIO::makeModule());
+    Vm::registerModule(StringModule::makeModule());
+
+    BaselineInterpreter interpreter;
+    if(interpreter.apply(file.stem().string().c_str()) != VmResult::SUCCESS) {
+        interpreter.trace();
         return 1;
+    } else {
+        return 0;
     }
-    return 0;
 }

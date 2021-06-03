@@ -1,10 +1,10 @@
 #include "Objects/ObjNativeMethod.h"
 #include "Vm/Vm.h"
 
-VmResult ObjNativeMethod::apply(Vm &vm) noexcept {
-    size_t sp = vm.stack().size();
-    vm.callStack().push(Frame(*this, sp));
-    const auto res = m_func(vm);
-    vm.callStack().pop();
+VmResult ObjNativeMethod::apply(Environment &env) noexcept {
+    size_t sp = env.stack().size();
+    env.callStack().enter(*this, sp);
+    const auto res = m_func(env);
+    env.callStack().leave();
     return res;
 }
