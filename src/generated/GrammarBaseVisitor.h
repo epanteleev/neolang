@@ -23,6 +23,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitField(GrammarParser::FieldContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitMethodDeclaration(GrammarParser::MethodDeclarationContext *ctx) override {
     return visitChildren(ctx);
   }

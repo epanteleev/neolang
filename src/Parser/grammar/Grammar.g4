@@ -7,7 +7,11 @@ compilationUnit
     ;
 
 classDeclaration
-    : CLASS IDENTIFIER '{' methodDeclaration* '}'
+    : CLASS IDENTIFIER '{' field* methodDeclaration* '}'
+    ;
+
+field
+    : FIELD IDENTIFIER ':' IDENTIFIER
     ;
 
 methodDeclaration
@@ -22,6 +26,7 @@ instruction
     : (IADD | ISUB | IDIV | IMUL | IRET)
     | (FADD | FSUB | FDIV | FMUL | FRET)
     | (OR | AND)
+    | NEW
     | CMPEQ
     | SWAP
     | RET
@@ -75,6 +80,7 @@ FRET     : 'fret';
 LDC      : 'ldc';
 SWAP     : 'swap';
 
+NEW     : 'new';
 
 AND      : 'and';
 OR       : 'or';
@@ -82,12 +88,16 @@ OR       : 'or';
 RSTORE   : 'rstore';
 CMPEQ    : 'cmpeq';
 
+FIELD       : 'field';
 CLASS       : 'class';
 DEF         : 'def';
 IF          : 'if';
 ELSE        : 'else';
 CALL        : 'call';
 RET         : 'ret';
+
+
+
 
 NEWLINE     : ('\r'? '\n' | '\r')+ -> skip ;
 

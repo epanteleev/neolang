@@ -120,7 +120,7 @@ VmResult BaselineInterpreter::CallStatic(Value arg0, Value arg1) {
 VmResult BaselineInterpreter::New(Value arg) {
     const ObjString *moduleName = Vm::findString(arg.value());
     TERMINATE(moduleName != nullptr, "No found module name.");
-    return callMethod(*moduleName, "<new>");
+    return callMethod(*moduleName, "init");
 }
 
 VmResult BaselineInterpreter::Ret() {

@@ -19,6 +19,7 @@ struct FlatString {
     }
 
     static uint32_t jenkins_one_at_a_time_hash(const char *key, std::size_t len) {
+        // Todo len is size_t, but i have uint32_t type
         uint32_t hash, i;
         for(hash = i = 0; i < len; ++i)
         {

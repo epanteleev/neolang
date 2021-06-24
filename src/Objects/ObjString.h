@@ -5,7 +5,7 @@
 #include <Vm/Value.h>
 #include <utility>
 
-class FlatString;
+struct FlatString;
 
 /**
  * Represent string class as flat structure wrapper.

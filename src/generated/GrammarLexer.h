@@ -12,13 +12,14 @@
 class  GrammarLexer : public antlr4::Lexer {
 public:
   enum {
-    T__0 = 1, T__1 = 2, T__2 = 3, IADD = 4, ISUB = 5, IDIV = 6, IMUL = 7, 
-    IPUSH = 8, IPOP = 9, ILOAD = 10, ISTORE = 11, IRET = 12, FADD = 13, 
-    FSUB = 14, FDIV = 15, FMUL = 16, FPUSH = 17, FPOP = 18, FLOAD = 19, 
-    FSTORE = 20, FRET = 21, LDC = 22, SWAP = 23, AND = 24, OR = 25, RSTORE = 26, 
-    CMPEQ = 27, CLASS = 28, DEF = 29, IF = 30, ELSE = 31, CALL = 32, RET = 33, 
-    NEWLINE = 34, TAB = 35, WHITESPACE = 36, DECIMAL_LITERAL = 37, FLOAT_LITERAL = 38, 
-    BOOL_LITERAL = 39, CHAR_LITERAL = 40, STRING_LITERAL = 41, IDENTIFIER = 42
+    T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, IADD = 5, ISUB = 6, IDIV = 7, 
+    IMUL = 8, IPUSH = 9, IPOP = 10, ILOAD = 11, ISTORE = 12, IRET = 13, 
+    FADD = 14, FSUB = 15, FDIV = 16, FMUL = 17, FPUSH = 18, FPOP = 19, FLOAD = 20, 
+    FSTORE = 21, FRET = 22, LDC = 23, SWAP = 24, NEW = 25, AND = 26, OR = 27, 
+    RSTORE = 28, CMPEQ = 29, FIELD = 30, CLASS = 31, DEF = 32, IF = 33, 
+    ELSE = 34, CALL = 35, RET = 36, NEWLINE = 37, TAB = 38, WHITESPACE = 39, 
+    DECIMAL_LITERAL = 40, FLOAT_LITERAL = 41, BOOL_LITERAL = 42, CHAR_LITERAL = 43, 
+    STRING_LITERAL = 44, IDENTIFIER = 45
   };
 
   explicit GrammarLexer(antlr4::CharStream *input);

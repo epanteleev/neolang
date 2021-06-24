@@ -1,6 +1,5 @@
 #include "Interpreter/BaselineInterpreter.h"
 #include <iostream>
-#include <Vm/Allocator/Collector.h>
 
 #include "Modules/BaseIO.h"
 #include "Modules/StringModule.h"

@@ -23,6 +23,8 @@ public:
 
     virtual antlrcpp::Any visitClassDeclaration(GrammarParser::ClassDeclarationContext *context) = 0;
 
+    virtual antlrcpp::Any visitField(GrammarParser::FieldContext *context) = 0;
+
     virtual antlrcpp::Any visitMethodDeclaration(GrammarParser::MethodDeclarationContext *context) = 0;
 
     virtual antlrcpp::Any visitInstructionsDecl(GrammarParser::InstructionsDeclContext *context) = 0;

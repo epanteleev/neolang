@@ -42,8 +42,8 @@ file(GLOB OBJECTS_HEADERS Objects/*.h)
 file(GLOB INTERPRETER_SOURCES Interpreter/*.cpp)
 file(GLOB INTERPRETER_HEADERS Interpreter/*.h)
 
-file(GLOB VM_SOURCES Vm/*.cpp)
-file(GLOB VM_HEADERS Vm/*.h)
+file(GLOB VM_SOURCES Vm/*.cpp Vm/Allocator/*.cpp)
+file(GLOB VM_HEADERS Vm/*.h Vm/Allocator/*.h)
 
 file(GLOB MODULES_SOURCES Modules/*.cpp)
 file(GLOB MODULES_HEADERS Modules/*.h)
@@ -57,6 +57,6 @@ add_executable(${PROJECT_NAME} main.cpp ${OBJECTS_SOURCES} ${OBJECTS_HEADERS}
         ${MODULES_SOURCES} ${MODULES_HEADERS}
          ${PARSER_SOURCES} ${PARSER_HEADERS}
         ${ANTLR_GrammarParser_CXX_OUTPUTS}
-        Vm/Allocator/DefaultAllocator.cpp Vm/Allocator/DefaultAllocator.h Vm/Allocator/Collector.cpp Vm/Allocator/Collector.h Vm/Allocator/RootSet.cpp Vm/Allocator/RootSet.h)
+        )
 
 target_link_libraries(${PROJECT_NAME} antlr4_static ${SYSTEM_LIBS})
