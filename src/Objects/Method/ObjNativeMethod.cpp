@@ -1,4 +1,4 @@
-#include "Objects/ObjNativeMethod.h"
+#include "ObjNativeMethod.h"
 #include "Vm/Vm.h"
 
 VmResult ObjNativeMethod::apply(Environment &env) noexcept {

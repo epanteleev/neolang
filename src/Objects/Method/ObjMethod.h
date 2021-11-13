@@ -11,7 +11,7 @@
 #include "Vm/Value.h"
 #include "Objects/Object.h"
 #include "Objects/ObjFrwd.h"
-#include "Objects/ObjMethodBase.h"
+#include "ObjMethodBase.h"
 
 /**
  * Represent method of programming language.
@@ -35,22 +35,17 @@ public:
     }
 
     [[nodiscard]]
-    inline InstructionList &instList() noexcept {
+    inline const InstructionList &instList() const noexcept {
         return m_instList;
     }
 
     [[nodiscard]]
-    inline bool isNative() const noexcept override {
-        return false;
+    inline const ObjMethod& asMethod() const noexcept override {
+        return *this;
     }
 
     [[nodiscard]]
-    inline ObjMethod& asMethod() const noexcept override {
-        return static_cast<ObjMethod&>(const_cast<ObjMethod &>(*this));
-    }
-
-    [[nodiscard]]
-    ObjNativeMethod& asNativeMethod() const noexcept override {
+    const ObjNativeMethod& asNativeMethod() const noexcept override {
         UNREACHABLE();
     }
 

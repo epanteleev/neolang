@@ -26,13 +26,10 @@ public:
     }
 
     [[nodiscard]]
-    virtual bool isNative() const noexcept = 0;
+    virtual const ObjMethod& asMethod() const noexcept = 0;
 
     [[nodiscard]]
-    virtual ObjMethod& asMethod() const noexcept = 0;
-
-    [[nodiscard]]
-    virtual ObjNativeMethod& asNativeMethod() const noexcept = 0;
+    virtual const ObjNativeMethod& asNativeMethod() const noexcept = 0;
 
     virtual VmResult apply(Environment &vm) noexcept = 0;
 

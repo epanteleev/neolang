@@ -9,8 +9,8 @@
  */
 class Object {
 public:
-    explicit Object(ObjString className) :
-        m_name(std::move(className))
+    explicit Object(ObjString&& name) :
+        m_name(std::move(name))
     {}
 
     virtual ~Object() = default;

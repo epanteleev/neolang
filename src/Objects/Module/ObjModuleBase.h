@@ -16,6 +16,13 @@ public:
         Object(std::move(module.m_name)),
         m_methods(std::move(module.m_methods)) {}
 
+public:
+    [[nodiscard]]
+    virtual const ObjModule& asModule() const noexcept = 0;
+
+    [[nodiscard]]
+    virtual const ObjNativeModule& asNativeModule() const noexcept = 0;
+
     [[nodiscard]]
     ObjMethodBase* findMethod(const ObjString &name) const noexcept;
 

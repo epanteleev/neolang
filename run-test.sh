@@ -6,6 +6,13 @@ RED=`tput setaf 1`
 GREEN=`tput setaf 2`
 RESET=`tput sgr0`
 
+function pause(){
+   read -p "$*"
+}
+
+function pause(){
+   read -p "$*"
+}
 function greeting() {
     echo -e "${GREEN}[START]: $1"
 }
@@ -43,6 +50,9 @@ runtest funtest/IFTest.nl "HelloWorld"
 runtest funtest/ConcatString.nl "HelloWorld"
 runtest funtest/ifElseTest.nl "Hello"
 runtest funtest/ifElseTest1.nl "Hello hello"
+runtest funtest/Point.nl 10
 runtestInput 22 funtest/Fibonacci.nl 17711
 runtestInput 1 funtest/Fibonacci.nl 1
 runtestInput 2 funtest/Fibonacci.nl 1
+
+pause 'Press [Enter] key to continue...'

@@ -1,5 +1,5 @@
 #include "Vm/CallStack.h"
-#include "Objects/ObjModule.h"
+#include "Objects/Module/ObjModule.h"
 
 void CallStack::stacktrace() {
     while (!m_stack.empty()) {

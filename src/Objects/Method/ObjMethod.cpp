@@ -1,4 +1,4 @@
-#include "Objects/ObjMethod.h"
+#include "ObjMethod.h"
 #include "Vm/Vm.h"
 
 VmResult ObjMethod::apply(Environment &env) noexcept {

@@ -26,10 +26,11 @@ instruction
     : (IADD | ISUB | IDIV | IMUL | IRET)
     | (FADD | FSUB | FDIV | FMUL | FRET)
     | (OR | AND)
-    | NEW
     | CMPEQ
     | SWAP
+    | DUP
     | RET
+    | RRET
     | call
     | instructionsWithOp
     ;
@@ -53,7 +54,11 @@ instructionsWithOp
     | FLOAD DECIMAL_LITERAL
     | FSTORE DECIMAL_LITERAL
     | LDC STRING_LITERAL
+    | NEW IDENTIFIER
+    | PUTFIELD IDENTIFIER
+    | GETFIELD IDENTIFIER
     | RSTORE DECIMAL_LITERAL
+    | RLOAD DECIMAL_LITERAL
     ;
 
 // Lexer rules
@@ -79,13 +84,18 @@ FSTORE   : 'fstore';
 FRET     : 'fret';
 LDC      : 'ldc';
 SWAP     : 'swap';
-
-NEW     : 'new';
+CALL     : 'call';
+RET      : 'ret';
+RRET     : 'rret';
+NEW      : 'new';
+PUTFIELD : 'putfield';
+GETFIELD : 'getfield';
 
 AND      : 'and';
 OR       : 'or';
-
+DUP      : 'dup';
 RSTORE   : 'rstore';
+RLOAD    : 'rload';
 CMPEQ    : 'cmpeq';
 
 FIELD       : 'field';
@@ -93,8 +103,7 @@ CLASS       : 'class';
 DEF         : 'def';
 IF          : 'if';
 ELSE        : 'else';
-CALL        : 'call';
-RET         : 'ret';
+
 
 
 

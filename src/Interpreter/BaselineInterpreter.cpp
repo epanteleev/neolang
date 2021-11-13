@@ -1,7 +1,5 @@
 #include "Interpreter/BaselineInterpreter.h"
-
-#define CASE(opCode, handler) case OpCode::opCode: return handler(); \
-                                break;
+#include "Vm/Instance.h"
 
 #define TERMINATE(condition, string, ...)                                              \
       do                                                                               \
@@ -33,37 +31,78 @@ VmResult BaselineInterpreter::callMethod(const ObjString &moduleName, const ObjS
 
 inline VmResult BaselineInterpreter::callInstruction(Instruction inst) noexcept {
     switch (inst.code()) {
-        case OpCode::iADD:   return iAdd();
-        case OpCode::iSUB:   return iSub();
-        case OpCode::iMUL:   return iMul();
-        case OpCode::iDIV:   return iDiv();
-        case OpCode::iPUSH:  return iPush(inst.arg0());
-        case OpCode::iSTORE: return iStore(inst.arg0());
-        case OpCode::iLOAD:  return iLoad(inst.arg0());
-        case OpCode::iRET:   return iRet();
-        case OpCode::I2F:    return i2f();
-        case OpCode::fDIV:   return fDiv();
-        case OpCode::fADD:   return fAdd();
-        case OpCode::fSUB:   return fSub();
-        case OpCode::fMUL:   return fMult();
-        case OpCode::fPUSH:  return fPush(inst.arg0());
-        case OpCode::fLOAD:  return fLoad(inst.arg0());
-        case OpCode::fSTORE: return fStore(inst.arg0());
-        case OpCode::fRET:   return fRet();
-        case OpCode::RET:    return Ret();
-        case OpCode::INVOKE: return Invoke();
-        case OpCode::CALL:   return CallStatic(inst.arg0(), inst.arg1());
-        case OpCode::NEW:    return New(inst.arg0());
-        case OpCode::LDC:    return ldc(inst.arg0());
-        case OpCode::SWAP:   return swap();
-        case OpCode::rSTORE: return rStore(inst.arg0());
-        case OpCode::rPUSH:  return rPush(inst.arg0());
-        case OpCode::CMPEQ:  return Cmp();
-        case OpCode::JUMP:   return Jump(inst.arg0());
-        case OpCode::GOTO:   return Goto(inst.arg0());
-        case OpCode::AND:    return And();
-        case OpCode::OR:     return Or();
-        default: TERMINATE(false, "Undefined instruction: %s", inst.toString().c_str());
+        case OpCode::iADD:
+            return iAdd();
+        case OpCode::iSUB:
+            return iSub();
+        case OpCode::iMUL:
+            return iMul();
+        case OpCode::iDIV:
+            return iDiv();
+        case OpCode::iPUSH:
+            return iPush(inst.arg0());
+        case OpCode::iSTORE:
+            return iStore(inst.arg0());
+        case OpCode::iLOAD:
+            return iLoad(inst.arg0());
+        case OpCode::iRET:
+            return iRet();
+        case OpCode::I2F:
+            return i2f();
+        case OpCode::fDIV:
+            return fDiv();
+        case OpCode::fADD:
+            return fAdd();
+        case OpCode::fSUB:
+            return fSub();
+        case OpCode::fMUL:
+            return fMult();
+        case OpCode::fPUSH:
+            return fPush(inst.arg0());
+        case OpCode::fLOAD:
+            return fLoad(inst.arg0());
+        case OpCode::fSTORE:
+            return fStore(inst.arg0());
+        case OpCode::fRET:
+            return fRet();
+        case OpCode::RET:
+            return Ret();
+        case OpCode::INVOKE:
+            return Invoke();
+        case OpCode::CALL:
+            return CallStatic(inst.arg0(), inst.arg1());
+        case OpCode::NEW:
+            return New(inst.arg0());
+        case OpCode::LDC:
+            return ldc(inst.arg0());
+        case OpCode::SWAP:
+            return swap();
+        case OpCode::rSTORE:
+            return rStore(inst.arg0());
+        case OpCode::rLOAD:
+            return rLoad(inst.arg0());
+        case OpCode::rPUSH:
+            return rPush(inst.arg0());
+        case OpCode::CMPEQ:
+            return Cmp();
+        case OpCode::JUMP:
+            return Jump(inst.arg0());
+        case OpCode::GOTO:
+            return Goto(inst.arg0());
+        case OpCode::AND:
+            return And();
+        case OpCode::OR:
+            return Or();
+        case OpCode::PUTFIELD:
+            return PutField(inst.arg0());
+        case OpCode::GETFIELD:
+            return GetField(inst.arg0());
+        case OpCode::RRET:
+            return RRet();
+        case OpCode::DUP:
+            return Dup();
+        default:
+            TERMINATE(false, "Undefined instruction: %s", inst.toString().c_str());
     }
 }
 
@@ -95,7 +134,7 @@ VmResult BaselineInterpreter::apply(const ObjString &moduleName) {
 void BaselineInterpreter::trace() {
     fprintf(stderr, "[Vm stacktrace]\n");
     fprintf(stderr, "[Api stack]\n");
-    for (auto& i : stack) {
+    for (auto &i : stack) {
         fprintf(stderr, "\t%lu:%s\n", i.value(), i.typeToString());
     }
     fprintf(stderr, "[Call stack]\n");
@@ -108,19 +147,22 @@ VmResult BaselineInterpreter::Invoke() {
 
 VmResult BaselineInterpreter::CallStatic(Value arg0, Value arg1) {
 
-    const ObjString *moduleName = Vm::findString(arg0.value());
-    TERMINATE(moduleName != nullptr, "No found module name.");
+    const ObjString &moduleName = Vm::findString(arg0.value());
+    const ObjString &methodName = Vm::findString(arg1.value());
 
-    const ObjString *methodName = Vm::findString(arg1.value());
-    TERMINATE(methodName != nullptr, "No found method name.");
-
-    return callMethod(*moduleName, *methodName);
+    return callMethod(moduleName, methodName);
 }
 
-VmResult BaselineInterpreter::New(Value arg) {
-    const ObjString *moduleName = Vm::findString(arg.value());
-    TERMINATE(moduleName != nullptr, "No found module name.");
-    return callMethod(*moduleName, "init");
+VmResult BaselineInterpreter::New(Value arg) noexcept {
+    const ObjString &moduleName = Vm::findString(arg.value());
+
+    auto &module = Vm::modules().findModule(moduleName)->asModule();
+    auto size = module.fieldsSize();
+
+    auto inst = static_cast<Instance *>(allocator.allocate(sizeof(Instance) + size));
+    inst->clazz = (ObjModuleBase *) &module;
+    stack.push(Value(reinterpret_cast<std::size_t>(inst), Value::Type::REF));
+    return VmResult::SUCCESS;
 }
 
 VmResult BaselineInterpreter::Ret() {
@@ -215,7 +257,7 @@ VmResult BaselineInterpreter::i2f() {
     TERMINATE(val.type() == Value::Type::INT32,
               "Invalid type. Required: %s. Found: %s.", Value::I32, val.typeToString());
 
-    stack.emplace((float)val.value());
+    stack.emplace((float) val.value());
     return VmResult::SUCCESS;
 }
 
@@ -276,9 +318,8 @@ VmResult BaselineInterpreter::fLoad(Value arg) {
 }
 
 VmResult BaselineInterpreter::ldc(Value arg) {
-    const auto *string = Vm::findString(arg.value());
-    TERMINATE(string != nullptr, "String no found.");
-    stack.push(string->value());
+    const auto &string = Vm::findString(arg.value());
+    stack.push(string.value());
     return VmResult::SUCCESS;
 }
 
@@ -293,7 +334,7 @@ VmResult BaselineInterpreter::rStore(Value arg) {
     TERMINATE(stack.nonEmpty(), "ApiStack is empty.");
     const auto a = stack.pop();
     TERMINATE(a.type() == Value::Type::REF,
-              "Invalid type. Required: %s. Found: %s.", Value::REF, arg.typeToString());
+              "Invalid type. Required: %s. Found: %s.", Value::REF, a.typeToString());
     m_local.store(a, arg.value());
     return VmResult::SUCCESS;
 }
@@ -337,5 +378,70 @@ VmResult BaselineInterpreter::swap() {
     const auto b = stack.pop();
     stack.push(a);
     stack.push(b);
+    return VmResult::SUCCESS;
+}
+
+VmResult BaselineInterpreter::PutField(Value arg) {
+    const auto value = stack.pop();
+    const auto ref = stack.pop();
+
+    TERMINATE(ref.type() == Value::Type::REF,
+              "Invalid type. Required: %s. Found: %s.", Value::REF, ref.typeToString());
+
+    const auto& module = callStack
+            .frame()
+            .method()
+            .module()
+            .asModule();
+
+    auto offset = module.offset(arg.value());
+
+    auto inst = reinterpret_cast<Instance *>(ref.value());
+    inst->fields[offset] = value;
+    return VmResult::SUCCESS;
+}
+
+VmResult BaselineInterpreter::GetField(Value arg) {
+    const auto ref = stack.pop();
+
+    TERMINATE(ref.type() == Value::Type::REF,
+              "Invalid type. Required: %s. Found: %s.", Value::REF, ref.typeToString());
+
+    const auto& module = callStack
+            .frame()
+            .method()
+            .module()
+            .asModule();
+
+    auto offset = module.offset(arg.value());
+
+    auto inst = reinterpret_cast<Instance *>(ref.value());
+    stack.push(inst->fields[offset]);
+    return VmResult::SUCCESS;
+}
+
+VmResult BaselineInterpreter::rLoad(Value arg) {
+    TERMINATE(arg.type() == Value::Type::INT32,
+              "Invalid type. Required: %s. Found: %s.", Value::I32, arg.typeToString());
+    const auto a = m_local.load(arg.value());
+    stack.push(a);
+    return VmResult::SUCCESS;
+}
+
+VmResult BaselineInterpreter::RRet() {
+    const auto val = stack.pop();
+    TERMINATE(val.type() == Value::Type::REF,
+              "Invalid return type. Required: %s. Found: %s.", Value::REF, val.typeToString());
+
+    auto frame = callStack.leave();
+    TERMINATE(stack.size() == frame.savedSp(), "Frame non empty.");
+
+    stack.push(val);
+    return VmResult::SUCCESS;
+}
+
+VmResult BaselineInterpreter::Dup() {
+    const auto val = stack.top();
+    stack.push(val);
     return VmResult::SUCCESS;
 }

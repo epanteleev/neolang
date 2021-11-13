@@ -2,7 +2,7 @@
 
 #include <stack>
 
-#include "Objects/ObjMethodBase.h"
+#include "Objects/Method/ObjMethodBase.h"
 #include "Vm/Instruction.h"
 
 class Frame final {

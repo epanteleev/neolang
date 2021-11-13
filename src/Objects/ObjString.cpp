@@ -205,3 +205,7 @@ ObjString operator+(const ObjString &s1, const char *s2) {
 const char *ObjString::cstr() const noexcept {
     return m_string->cstr;
 }
+
+std::uint32_t ObjString::hash() const noexcept {
+    return m_string->hash;
+}

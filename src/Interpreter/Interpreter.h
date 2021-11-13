@@ -19,7 +19,7 @@ public:
     virtual VmResult CallStatic(Value arg0, Value arg1) = 0;
     virtual VmResult Ret() = 0;
     virtual VmResult Invoke() = 0;
-    virtual VmResult New(Value arg) = 0;
+    virtual VmResult New(Value arg) noexcept = 0;
     virtual VmResult fAdd() = 0;
     virtual VmResult fSub() = 0;
     virtual VmResult fDiv() = 0;
@@ -32,9 +32,14 @@ public:
     virtual VmResult swap() = 0;
     virtual VmResult rPush(Value arg) = 0;
     virtual VmResult rStore(Value arg) = 0;
+    virtual VmResult rLoad(Value arg) = 0;
     virtual VmResult Cmp() = 0;
     virtual VmResult Jump(Value arg) = 0;
     virtual VmResult Goto(Value arg) = 0;
     virtual VmResult And() = 0;
     virtual VmResult Or() = 0;
+    virtual VmResult PutField(Value arg) = 0;
+    virtual VmResult GetField(Value arg) = 0;
+    virtual VmResult RRet() = 0;
+    virtual VmResult Dup() = 0;
 };

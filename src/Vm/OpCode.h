@@ -32,12 +32,17 @@ enum class OpCode : uint8_t {
     SWAP,
     rPUSH,
     rSTORE,
+    rLOAD,
     RET,
+    RRET,
     CMPEQ,
     JUMP,
     GOTO,
     AND,
-    OR
+    OR,
+    PUTFIELD,
+    GETFIELD,
+    DUP
 };
 
 constexpr const char *iADD       = "iADD";
@@ -71,6 +76,10 @@ constexpr const char *JUMP       = "JUMP";
 constexpr const char *GOTO       = "GOTO";
 constexpr const char *AND        = "AND";
 constexpr const char *OR         = "OR";
+constexpr const char *PUTFIELD   = "PUTFIELD";
+constexpr const char *GETFIELD   = "GETFIELD";
+constexpr const char *RRET       = "RRET";
+constexpr const char *DUP        = "DUP";
 
 inline constexpr const char *opCodeToString(OpCode opcode) noexcept {
     switch (opcode) {
@@ -80,6 +89,7 @@ inline constexpr const char *opCodeToString(OpCode opcode) noexcept {
         case OpCode::iDIV:       return iDIV;
         case OpCode::iPUSH:      return iPUSH;
         case OpCode::iSTORE:     return iSTORE;
+        case OpCode::iLOAD:      return iLOAD;
         case OpCode::iRET:       return iRET;
         case OpCode::I2F:        return I2F;
         case OpCode::fADD:       return fADD;
@@ -103,6 +113,10 @@ inline constexpr const char *opCodeToString(OpCode opcode) noexcept {
         case OpCode::GOTO:       return GOTO;
         case OpCode::AND:        return AND;
         case OpCode::OR:         return OR;
+        case OpCode::PUTFIELD:   return PUTFIELD;
+        case OpCode::GETFIELD:   return GETFIELD;
+        case OpCode::RRET:       return RRET;
+        case OpCode::DUP:        return DUP;
         default:                 return UNDEFINED;
     }
 }

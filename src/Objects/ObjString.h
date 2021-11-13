@@ -41,6 +41,8 @@ public:
     [[nodiscard]]
     size_t index(char c) const noexcept;
 
+    std::uint32_t hash() const noexcept;
+
     [[nodiscard]]
     const char *cstr() const noexcept;
 

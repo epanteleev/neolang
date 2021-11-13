@@ -1,6 +1,6 @@
 #include "Parser.h"
 
-#include "antlr4-runtime.h"
+#include <antlr4-runtime.h>
 #include "generated/GrammarLexer.h"
 #include "generated/GrammarParser.h"
 #include "VisitorImpl.h"

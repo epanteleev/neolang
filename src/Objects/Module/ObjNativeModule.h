@@ -3,8 +3,8 @@
 #include <list>
 
 #include "Objects/Object.h"
-#include "Objects/ObjNativeMethod.h"
-#include "Objects/ObjModuleBase.h"
+#include "Objects/Method/ObjNativeMethod.h"
+#include "Objects/Module/ObjModuleBase.h"
 
 class ObjNativeModule : public ObjModuleBase {
 public:
@@ -16,7 +16,16 @@ public:
 
     ~ObjNativeModule() override = default;
 
+public:
     inline void addMethod(std::unique_ptr<ObjNativeMethod> &&method) noexcept {
         m_methods.push_back(std::move(method));
+    }
+
+    const ObjModule &asModule() const noexcept override {
+        UNREACHABLE();
+    }
+
+    const ObjNativeModule & asNativeModule() const noexcept override {
+        return *this;
     }
 };

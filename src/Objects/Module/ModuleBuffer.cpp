@@ -1,4 +1,4 @@
-#include "ModuleBuffer.h"
+#include "Objects/Module/ModuleBuffer.h"
 
 ObjMethodBase *ModuleBuffer::findMethod(const ObjString &moduleName, const ObjString &name) noexcept {
     const auto* module = findModule(moduleName);

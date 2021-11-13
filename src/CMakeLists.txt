@@ -36,8 +36,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 include_directories(.)
 
-file(GLOB OBJECTS_SOURCES Objects/*.cpp)
-file(GLOB OBJECTS_HEADERS Objects/*.h)
+file(GLOB OBJECTS_SOURCES Objects/*.cpp Objects/Module/*.cpp Objects/Method/*.cpp)
+file(GLOB OBJECTS_HEADERS Objects/*.h Objects/Module/*.h Objects/Method/*.h)
 
 file(GLOB INTERPRETER_SOURCES Interpreter/*.cpp)
 file(GLOB INTERPRETER_HEADERS Interpreter/*.h)
@@ -45,7 +45,7 @@ file(GLOB INTERPRETER_HEADERS Interpreter/*.h)
 file(GLOB VM_SOURCES Vm/*.cpp Vm/Allocator/*.cpp)
 file(GLOB VM_HEADERS Vm/*.h Vm/Allocator/*.h)
 
-file(GLOB MODULES_SOURCES Modules/*.cpp)
+file(GLOB MODULES_SOURCES Modules/*.cpp )
 file(GLOB MODULES_HEADERS Modules/*.h)
 
 file(GLOB PARSER_SOURCES Parser/*.cpp )

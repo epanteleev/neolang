@@ -24,6 +24,7 @@ public:
     static constexpr const char *I32 = "i32";
     static constexpr const char *REF = "ref";
     static constexpr const char *F32 = "f32";
+    static constexpr const char *F64 = "f64";
     static constexpr const char *UD  = "ud";
     static constexpr const char *BOOL  = "bool";
 
@@ -97,7 +98,7 @@ public: // Conversions.
 
 public:
     inline constexpr bool operator==(const Value &value) const noexcept {
-        //Bug: Compare floating point value.
+        //Todo(bug): Compare floating point value.
         return m_type == value.m_type && m_value == value.m_value;
     }
 
@@ -113,6 +114,7 @@ public:
         return (m_type == Type::INT32) && m_value < value;
     }
 
+    [[nodiscard]]
     inline constexpr const char * typeToString() const noexcept {
         switch (m_type) {
             case Type::INT32:   return I32;
@@ -123,6 +125,9 @@ public:
             default:            return UD;
         }
     }
+
+public:
+    static Type stringToType(const char *str) noexcept;
 
 private:
     uint64_t m_value;

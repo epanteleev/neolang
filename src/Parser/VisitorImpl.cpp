@@ -11,8 +11,17 @@ antlrcpp::Any VisitorImpl::visitClassDeclaration(GrammarParser::ClassDeclaration
     auto moduleName = ObjString::from(ctx->IDENTIFIER()->toString());
     auto module = ObjModule::make(std::move(moduleName));
 
-    auto methods = ctx->methodDeclaration();
-    for (auto& i: methods) {
+    std::size_t offset = 0;
+    for (auto &i: ctx->field()) {
+        auto fieldName = i->IDENTIFIER().back()->toString();
+        auto pos = Vm::strings().push(fieldName.c_str());
+
+        auto type = Value::stringToType(i->IDENTIFIER().front()->toString().c_str());
+        module->addField(pos, offset, type);
+        offset += 1;
+    }
+
+    for (auto &i: ctx->methodDeclaration()) {
         module->addMethod(visitMethodDeclarationOverride(i));
     }
     Vm::registerModule(std::move(module));
@@ -24,7 +33,7 @@ std::unique_ptr<ObjMethod> VisitorImpl::visitMethodDeclarationOverride(GrammarPa
     auto methodName = ObjString::from(str);
 
     StreamInstruction list = visitInstructionsDecl(ctx->instructionsDecl()).as<StreamInstruction>();
-    InstructionList v{std::make_move_iterator(std::begin(list)), std::make_move_iterator(std::end(list)) };
+    InstructionList v{std::make_move_iterator(std::begin(list)), std::make_move_iterator(std::end(list))}; //Todo
     return ObjMethod::make(std::move(methodName), std::move(v));
 }
 
@@ -76,6 +85,8 @@ antlrcpp::Any VisitorImpl::visitInstruction(GrammarParser::InstructionContext *c
         return Instruction(OpCode::fDIV);
     } else if (ctx->FRET()) {
         return Instruction(OpCode::fRET);
+    } else if (ctx->RRET()) {
+        return Instruction(OpCode::RRET);
     } else if (ctx->CMPEQ()) {
         return Instruction(OpCode::CMPEQ);
     } else if (ctx->AND()) {
@@ -86,6 +97,8 @@ antlrcpp::Any VisitorImpl::visitInstruction(GrammarParser::InstructionContext *c
         return Instruction(OpCode::iRET);
     } else if (ctx->SWAP()) {
         return Instruction(OpCode::SWAP);
+    } else if (ctx->DUP()) {
+        return Instruction(OpCode::DUP);
     }
 
     if (ctx->call()) {
@@ -98,33 +111,36 @@ antlrcpp::Any VisitorImpl::visitInstruction(GrammarParser::InstructionContext *c
 
 antlrcpp::Any VisitorImpl::visitInstructionsWithOp(GrammarParser::InstructionsWithOpContext *ctx) {
     if (ctx->IPUSH()) {
-        return Instruction(OpCode::iPUSH, std::stoi(ctx->DECIMAL_LITERAL()->toString()));
+        return Instruction::iPUSH(ctx->DECIMAL_LITERAL()->toString());
     } else if (ctx->ILOAD()) {
-        return Instruction(OpCode::iLOAD, std::stoi(ctx->DECIMAL_LITERAL()->toString()));
+        return Instruction::iLOAD(ctx->DECIMAL_LITERAL()->toString());
     } else if (ctx->ISTORE()) {
-        return Instruction(OpCode::iSTORE, std::stoi(ctx->DECIMAL_LITERAL()->toString()));
+        return Instruction::iSTORE(ctx->DECIMAL_LITERAL()->toString());
     } else if (ctx->FPUSH()) {
-        return Instruction(OpCode::fPUSH, std::stof(ctx->FLOAT_LITERAL()->toString()));
+        return Instruction::fPUSH(ctx->FLOAT_LITERAL()->toString());
     } else if (ctx->FSTORE()) {
-        return Instruction(OpCode::fSTORE, std::stoi(ctx->DECIMAL_LITERAL()->toString()));
+        return Instruction::fSTORE(ctx->DECIMAL_LITERAL()->toString());
     } else if (ctx->FLOAD()) {
-        return Instruction(OpCode::fLOAD, std::stoi(ctx->DECIMAL_LITERAL()->toString()));
+        return Instruction::fLOAD(ctx->DECIMAL_LITERAL()->toString());
     } else if (ctx->LDC()) {
-        auto str = ctx->STRING_LITERAL()->toString();
-        size_t pos = Vm::addStringConstant(ObjString::from(str.substr(1, str.size() - 2)));
-        return Instruction(OpCode::LDC, Value(pos, Value::Type::REF));
+        return Instruction::LDC(ctx->STRING_LITERAL()->toString());
     } else if (ctx->RSTORE()) {
-        return Instruction(OpCode::rSTORE,std::stol(ctx->DECIMAL_LITERAL()->getText()));
+        return Instruction::rSTORE(ctx->DECIMAL_LITERAL()->getText());
+    } else if (ctx->RLOAD()) {
+        return Instruction::rLOAD(ctx->DECIMAL_LITERAL()->getText());
+    } else if (ctx->PUTFIELD()) {
+        return Instruction::PUTFIELD(ctx->IDENTIFIER()->toString());
+    } else if (ctx->GETFIELD()) {
+        return Instruction::GETFIELD(ctx->IDENTIFIER()->toString());
+    } else if (ctx->NEW()) {
+        return Instruction::NEW(ctx->IDENTIFIER()->toString());
     }
     UNREACHABLE();
 }
 
 antlrcpp::Any VisitorImpl::visitCall(GrammarParser::CallContext *ctx) {
     auto called = ctx->IDENTIFIER();
-
-    size_t posCn = Vm::addStringConstant(ObjString::from(called[0]->toString()));
-    size_t posCm = Vm::addStringConstant(ObjString::from(called[1]->toString()));
-    return Instruction(OpCode::CALL, Value(posCn, Value::Type::REF), Value(posCm, Value::Type::REF));
+    return Instruction::CALL(called[0]->toString(),called[1]->toString());
 }
 
 antlrcpp::Any VisitorImpl::visitIfBlock(GrammarParser::IfBlockContext *ctx) {

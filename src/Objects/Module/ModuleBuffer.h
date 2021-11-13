@@ -3,9 +3,9 @@
 #include <memory>
 #include <list>
 
-#include "Objects/ObjModuleBase.h"
-#include "Objects/ObjModule.h"
-#include "Objects/ObjNativeModule.h"
+#include "ObjModuleBase.h"
+#include "ObjModule.h"
+#include "ObjNativeModule.h"
 
 /**
  * Represent buffer of modules.

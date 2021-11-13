@@ -1,9 +1,9 @@
 #pragma once
 
 #include <memory>
-#include <Objects/ObjMethod.h>
-#include <Objects/ObjNativeMethod.h>
-#include "Objects/ObjNativeModule.h"
+#include <Objects/Method/ObjMethod.h>
+#include <Objects/Method/ObjNativeMethod.h>
+#include "Objects/Module/ObjNativeModule.h"
 /**
  * Module for working with string in language.
  * @author minium

@@ -26,9 +26,15 @@ public:
         return m_sp;
     }
 
+    [[nodiscard]]
     inline Value pop() noexcept {
         ASSERT(m_sp != 0, "ApiStack is empty.");
         return m_stack[--m_sp];
+    }
+
+    [[nodiscard]]
+    inline Value top() noexcept {
+        return m_stack[m_sp - 1];
     }
 
     [[nodiscard]]

@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "Objects/Object.h"
-#include "Objects/ObjMethodBase.h"
+#include "ObjMethodBase.h"
 
 using Native = std::function<VmResult(Environment &)>;
 
@@ -35,17 +35,14 @@ public:
     VmResult apply(Environment &env) noexcept override;
 
     [[nodiscard]]
-    ObjMethod& asMethod() const noexcept override {
+    const ObjMethod& asMethod() const noexcept override {
         UNREACHABLE();
     }
 
     [[nodiscard]]
-    inline ObjNativeMethod& asNativeMethod() const noexcept override {
-        return static_cast<ObjNativeMethod&>(const_cast<ObjNativeMethod &>(*this));
+    inline const ObjNativeMethod& asNativeMethod() const noexcept override {
+        return *this;
     }
-
-    [[nodiscard]]
-    inline bool isNative() const noexcept override { return true; }
 
 public:
     inline static std::unique_ptr<ObjNativeMethod> make(const ObjString &moduleName, Native func) noexcept {

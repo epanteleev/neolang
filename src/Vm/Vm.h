@@ -2,8 +2,8 @@
 
 #include <array>
 
-#include "Objects/ObjNativeModule.h"
-#include "Objects/ModuleBuffer.h"
+#include "Objects/Module/ObjNativeModule.h"
+#include "Objects/Module/ModuleBuffer.h"
 
 #include "Vm/Environment.h"
 
@@ -38,21 +38,13 @@ public:
 
 public:
 
-    /**
-     * Insert given str to string pull.
-     * @return position str in string buffer.
-     */
-    static size_t addStringConstant(ObjString &&str) noexcept {
-        strings().push_back(std::move(str));
-        return strings().size() - 1;
+    [[nodiscard]]
+    static const ObjString &findString(std::size_t idx) noexcept {
+        return strings().find(idx);
     }
 
     [[nodiscard]]
-    static const ObjString *findString(size_t idx) noexcept {
-        if (strings().size() <= idx) {
-            return nullptr;
-        } else {
-            return &strings()[idx];
-        }
+    static std::size_t findStr(const char* str) noexcept {
+        return Vm::strings().find(str); //Todo called copy constructor
     }
 };

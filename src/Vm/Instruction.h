@@ -3,6 +3,7 @@
 #include <vector>
 #include <list>
 #include <sstream>
+#include <Objects/ObjString.h>
 
 #include "Vm/Value.h"
 #include "Vm/OpCode.h"
@@ -23,7 +24,7 @@ struct Instruction {
             m_arg0(Value()),
             m_arg1(Value()) {}
 
-    Instruction& operator=(const Instruction& inst) noexcept = delete;
+    Instruction &operator=(const Instruction &inst) noexcept = delete;
 
 public:
     [[nodiscard]]
@@ -48,6 +49,49 @@ public:
         stream << opCodeToString(m_opCode);
         return stream.str();
     }
+
+public:
+    inline static Instruction iPUSH(const std::string &integer) {
+        return Instruction(OpCode::iPUSH, std::stoi(integer));
+    }
+
+    inline static Instruction iLOAD(const std::string &cell) {
+        return Instruction(OpCode::iLOAD, std::stoi(cell));
+    }
+
+    inline static Instruction iSTORE(const std::string &cell) {
+        return Instruction(OpCode::iSTORE, std::stoi(cell));
+    }
+
+    inline static Instruction fPUSH(const std::string &floatValue) {
+        return Instruction(OpCode::fPUSH, std::stof(floatValue));
+    }
+
+    inline static Instruction fSTORE(const std::string &cell) {
+        return Instruction(OpCode::fSTORE, std::stoi(cell));
+    }
+
+    inline static Instruction fLOAD(const std::string &cell) {
+        return Instruction(OpCode::fLOAD, std::stoi(cell));
+    }
+
+    static Instruction LDC(const std::string &stringLiteral);
+
+    inline static Instruction rSTORE(const std::string &cell) {
+        return Instruction(OpCode::rSTORE, std::stoi(cell));
+    }
+
+    inline static Instruction rLOAD(const std::string &cell) {
+        return Instruction(OpCode::rLOAD, std::stoi(cell));
+    }
+
+    static Instruction PUTFIELD(const std::string &fieldName);
+
+    static Instruction GETFIELD(const std::string &fieldName);
+
+    static Instruction NEW(const std::string &className);
+
+    static Instruction CALL(const std::string &module, const std::string &method);
 
 private:
     OpCode m_opCode;
