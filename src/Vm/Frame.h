@@ -22,7 +22,7 @@ public:
     }
 
     inline void gotoInst(std::size_t ip) noexcept {
-        m_ip += ip;
+        m_ip = ip;
     }
 
     [[nodiscard]]
@@ -37,6 +37,6 @@ public:
 
 private:
     ObjMethodBase &m_method;
-    int64_t m_ip;
+    std::size_t m_ip;
     const std::size_t m_sp;
 };

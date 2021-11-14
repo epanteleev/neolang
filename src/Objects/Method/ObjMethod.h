@@ -19,6 +19,9 @@
  */
 class ObjMethod : public ObjMethodBase {
 public:
+    using Pointer = std::unique_ptr<ObjMethod>;
+
+public:
     explicit ObjMethod(ObjString&& methodName) :
             ObjMethodBase(std::move(methodName)) {}
 
@@ -52,11 +55,11 @@ public:
     VmResult apply(Environment &vm) noexcept override;
 
 public:
-    static std::unique_ptr<ObjMethod> make(ObjString&& name, InstructionList &&instList) noexcept {
+    static Pointer make(ObjString&& name, InstructionList &&instList) noexcept {
         return std::make_unique<ObjMethod>(std::move(name), std::move(instList));
     }
 
-    static std::unique_ptr<ObjMethod> make(ObjString&& name) noexcept {
+    static Pointer make(ObjString&& name) noexcept {
         return std::make_unique<ObjMethod>(std::move(name));
     }
 

@@ -2,7 +2,7 @@
 #include <Vm/Vm.h>
 
 Instruction Instruction::LDC(const std::string &stringLiteral) {
-    ObjString string = ObjString::from(stringLiteral.substr(1, stringLiteral.size() - 2));
+    ObjString string = ObjString::from(stringLiteral);
 
     size_t pos = Vm::strings()
             .push(std::move(string));

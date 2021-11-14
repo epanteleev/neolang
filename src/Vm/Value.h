@@ -91,7 +91,7 @@ public: // Conversions.
     }
 
     [[nodiscard]]
-    inline constexpr void *toPtr() const noexcept {
+    inline void *toPtr() const noexcept {
         ASSERT(m_type == Type::REF, "Invalid cast to reference.");
         return reinterpret_cast<void *>(m_value);
     }

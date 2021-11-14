@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <Vm/Value.h>
 #include <utility>
+#include <string>
 
 struct FlatString;
 

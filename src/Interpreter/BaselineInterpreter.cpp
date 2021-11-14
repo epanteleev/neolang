@@ -85,6 +85,8 @@ inline VmResult BaselineInterpreter::callInstruction(Instruction inst) noexcept 
             return rPush(inst.arg0());
         case OpCode::CMPEQ:
             return Cmp();
+        case OpCode::CMPNEQ:
+            return CmpnEq();
         case OpCode::JUMP:
             return Jump(inst.arg0());
         case OpCode::GOTO:
@@ -346,9 +348,16 @@ VmResult BaselineInterpreter::Cmp() {
     return VmResult::SUCCESS;
 }
 
+VmResult BaselineInterpreter::CmpnEq() {
+    const auto a = stack.pop();
+    const auto b = stack.pop();
+    stack.emplace(a != b, Value::Type::BOOL);
+    return VmResult::SUCCESS;
+}
+
 VmResult BaselineInterpreter::Jump(Value arg) {
     const auto cond = stack.pop();
-    if (!cond.toBool()) {
+    if (cond.toBool()) {
         callStack.frame().gotoInst(arg.value());
     }
     return VmResult::SUCCESS;

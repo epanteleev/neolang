@@ -24,7 +24,7 @@ struct Instruction {
             m_arg0(Value()),
             m_arg1(Value()) {}
 
-    Instruction &operator=(const Instruction &inst) noexcept = delete;
+    Instruction &operator=(const Instruction &inst) noexcept = default;
 
 public:
     [[nodiscard]]

@@ -15,7 +15,14 @@
  */
 class ObjModule final : public ObjModuleBase {
 public:
-    explicit ObjModule(ObjString moduleName) : ObjModuleBase(std::move(moduleName)) {}
+    using Pointer = std::unique_ptr<ObjModule>;
+    using Fields = std::list<ObjField>;
+
+public:
+    explicit ObjModule(ObjString moduleName, Fields fields) :
+        ObjModuleBase(std::move(moduleName)),
+        m_fields(std::move(fields))
+        {}
 
     ObjModule(ObjModule &&module) noexcept:
             ObjModuleBase(module.moduleName()) {}
@@ -60,8 +67,8 @@ public:
     }
 
 public:
-    static std::unique_ptr<ObjModule> make(ObjString &&moduleName) noexcept {
-        return std::make_unique<ObjModule>(std::move(moduleName));
+    static Pointer make(ObjString &&moduleName, Fields fields) noexcept {
+        return std::make_unique<ObjModule>(std::move(moduleName), std::move(fields));
     }
 
 private:

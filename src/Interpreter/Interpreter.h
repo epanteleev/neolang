@@ -34,6 +34,7 @@ public:
     virtual VmResult rStore(Value arg) = 0;
     virtual VmResult rLoad(Value arg) = 0;
     virtual VmResult Cmp() = 0;
+    virtual VmResult CmpnEq() = 0;
     virtual VmResult Jump(Value arg) = 0;
     virtual VmResult Goto(Value arg) = 0;
     virtual VmResult And() = 0;

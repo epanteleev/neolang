@@ -13,7 +13,13 @@ int main(int argv, char** args) {
     }
     std::filesystem::path file(args[1]);
 
-    Parser::parse(file);
+    try {
+        Parser::parse(file);
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() <<  std::endl;
+        return 1;
+    }
+
 
     Vm::registerModule(BaseIO::makeModule());
     Vm::registerModule(StringModule::makeModule());

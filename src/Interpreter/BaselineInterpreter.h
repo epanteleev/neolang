@@ -56,6 +56,7 @@ public:
     VmResult rStore(Value arg) override;
     VmResult rLoad(Value arg) override;
     VmResult Cmp() override;
+    VmResult CmpnEq() override;
     VmResult Jump(Value arg) override;
     VmResult Goto(Value arg) override;
     VmResult And() override;
