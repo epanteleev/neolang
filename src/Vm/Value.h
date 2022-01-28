@@ -10,6 +10,9 @@
  */
 class Value final {
 public:
+    using value_type = uint64_t;
+
+public:
     enum class Type : uint8_t {
         UNDEFINED,
         INT32,
@@ -57,7 +60,7 @@ public:
     constexpr Type type() const noexcept { return m_type; }
 
     [[nodiscard]]
-    constexpr uint64_t value() const noexcept { return m_value; }
+    constexpr value_type value() const noexcept { return m_value; }
 
 public: // Conversions.
     [[nodiscard]]
@@ -115,7 +118,7 @@ public:
     }
 
     [[nodiscard]]
-    inline constexpr const char * typeToString() const noexcept {
+    constexpr const char * typeToString() const noexcept {
         switch (m_type) {
             case Type::INT32:   return I32;
             case Type::REF:     return REF;
@@ -130,6 +133,6 @@ public:
     static Type stringToType(const char *str) noexcept;
 
 private:
-    uint64_t m_value;
+    value_type m_value;
     Type m_type;
 };

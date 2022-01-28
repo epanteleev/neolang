@@ -17,21 +17,21 @@ public:
     [[nodiscard]]
     bool hasNext() const noexcept;
 
-    inline void next() noexcept {
+    forceinline void next() noexcept {
         m_ip++;
     }
 
-    inline void gotoInst(std::size_t ip) noexcept {
+    forceinline void jump(std::size_t ip) noexcept {
         m_ip = ip;
     }
 
     [[nodiscard]]
-    inline ObjMethodBase &method() const noexcept {
+    forceinline ObjMethodBase &method() const noexcept {
         return m_method;
     }
 
     [[nodiscard]]
-    inline std::size_t savedSp() const noexcept {
+    forceinline std::size_t savedSp() const noexcept {
         return m_sp;
     }
 

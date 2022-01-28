@@ -13,6 +13,9 @@ public:
         //Todo: Unimplemented yet.
     }
 
+    static bool poolAtSafepoint() noexcept {
+        ASSERT(false, "unimplemented yet");
+    }
 private:
     ApiStack &m_apiStack;
     Locals &m_locals;

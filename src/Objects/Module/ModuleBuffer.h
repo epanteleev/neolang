@@ -13,6 +13,10 @@
  */
 class ModuleBuffer final {
 public:
+    using module_list = std::list<std::unique_ptr<ObjModuleBase>>;
+    using iterator = module_list::iterator;
+
+public:
     ModuleBuffer() = default;
 
     ModuleBuffer(ModuleBuffer &) = delete;
@@ -35,7 +39,7 @@ public:
     /**
      * Insert new native module.
      */
-    inline void addModule(std::unique_ptr<ObjNativeModule> &&module) noexcept {
+    inline void addModule(std::unique_ptr<ObjNativeModule> module) noexcept {
         m_modules.push_back(std::move(module));
     }
 
@@ -46,6 +50,15 @@ public:
         m_modules.push_back(std::move(module));
     }
 
+public:
+    iterator begin() {
+        return m_modules.begin();
+    }
+
+    iterator end() {
+        return m_modules.begin();
+    }
+
 private:
-    std::list<std::unique_ptr<ObjModuleBase>> m_modules;
+    module_list m_modules;
 };

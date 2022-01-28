@@ -3,12 +3,16 @@
 #include "Vm/Allocator/DefaultAllocator.h"
 #include "Vm/Common.h"
 
-void *DefaultAllocator::allocate(size_t size) {
-    return new uint8_t[size];
+void *DefaultAllocator::allocate(size_type size) {
+    auto ptr = new type[size];
+    m_pool.emplace_back(ptr);
+    return ptr;
 }
 
 void DefaultAllocator::remove(void *ptr) {
-    ::delete[] reinterpret_cast<uint8_t *>(ptr);
+    auto data = static_cast<pointer>(ptr);
+    m_pool.remove(data);
+    ::delete[] data;
 }
 
 static DefaultAllocator allocator;

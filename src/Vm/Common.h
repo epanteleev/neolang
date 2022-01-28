@@ -22,3 +22,6 @@
           __FILE__, __LINE__, __func__);                                     \
       abort();                                                               \
     } while (false)
+
+
+#define forceinline __forceinline

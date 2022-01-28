@@ -18,13 +18,13 @@ public:
 
     Locals operator=(Locals&) = delete;
 public:
-    inline constexpr void store(Value val, size_t idx) noexcept {
+    forceinline void store(Value val, size_t idx) noexcept {
         ASSERT(idx < MAX_LOCAL_VARS, "Invalid variable index.");
         m_locals[idx] = val;
     }
 
     [[nodiscard]]
-    inline constexpr Value load(size_t idx) const noexcept {
+    forceinline Value load(size_t idx) const noexcept {
         ASSERT(idx < MAX_LOCAL_VARS, "Invalid local variables index.");
         return m_locals[idx];
     }

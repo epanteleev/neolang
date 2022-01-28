@@ -175,7 +175,7 @@ char &ObjString::operator[](size_t j) noexcept {
 
 ObjString ObjString::from(const std::string &string) {
     if (string.empty()) {
-        return ObjString();
+        return {};
     }
     auto *str = new(string.length()) FlatString();
     std::copy(string.cbegin(), string.cend(), str->cstr);

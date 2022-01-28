@@ -7,15 +7,19 @@
 /**
  * Field of class.
  */
-class ObjField {
+class ObjField final {
 public:
-    explicit ObjField(std::size_t nameID, std::size_t offset, Value::Type type) :
+    using size_type = std::size_t;
+    using value_type = Value::Type;
+
+public:
+    explicit ObjField(size_type nameID, size_type offset, Value::Type type) :
             nameId(nameID),
             offset(offset),
             type(type) {}
 
 public:
-    std::size_t nameId;
-    std::size_t offset;
+    size_type nameId;
+    size_type offset;
     Value::Type type;
 };

@@ -14,37 +14,40 @@ enum class VmResult {
 };
 
 class Vm final {
-private:
+public:
     Vm() = default;
+    ~Vm() = default;
+    Vm(Vm&) = delete;
 
 public:
-    static void registerModule(std::unique_ptr<ObjModule> &&module) noexcept {
+    void registerModule(std::unique_ptr<ObjModule> module) noexcept {
         modules().addModule(std::move(module));
     }
 
-    static void registerModule(std::unique_ptr<ObjNativeModule> &&module) noexcept {
+    void registerModule(std::unique_ptr<ObjNativeModule> module) noexcept {
         modules().addModule(std::move(module));
     }
 
-    static ModuleBuffer &modules() noexcept {
-        static ModuleBuffer m_modules;
+    ModuleBuffer &modules() noexcept {
         return m_modules;
     }
 
-    static StringBuffer &strings() noexcept {
-        static StringBuffer m_constantStrings;
+    StringBuffer &strings() noexcept  {
         return m_constantStrings;
     }
 
 public:
-
     [[nodiscard]]
-    static const ObjString &findString(std::size_t idx) noexcept {
+    const ObjString &findString(std::size_t idx) noexcept {
         return strings().find(idx);
     }
 
     [[nodiscard]]
-    static std::size_t findStr(const char* str) noexcept {
+    std::size_t findStr(const char* str) noexcept {
         return Vm::strings().find(str); //Todo called copy constructor
     }
+
+private:
+    ModuleBuffer m_modules;
+    StringBuffer m_constantStrings;
 };

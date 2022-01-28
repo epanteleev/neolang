@@ -23,7 +23,7 @@
       } while (false)
 
 VmResult BaselineInterpreter::callMethod(const ObjString &moduleName, const ObjString &methodName) {
-    ObjMethodBase *method = Vm::modules().findMethod(moduleName, methodName);
+    ObjMethodBase *method = vm.modules().findMethod(moduleName, methodName);
     TERMINATE(method != nullptr, "Unresolved method %s::%s", moduleName.cstr(), methodName.cstr());
     Environment env(stack, m_local, callStack);
     return method->apply(env);
@@ -47,7 +47,7 @@ inline VmResult BaselineInterpreter::callInstruction(Instruction inst) noexcept 
             return iLoad(inst.arg0());
         case OpCode::iRET:
             return iRet();
-        case OpCode::I2F:
+        case OpCode::i2F:
             return i2f();
         case OpCode::fDIV:
             return fDiv();
@@ -110,7 +110,7 @@ inline VmResult BaselineInterpreter::callInstruction(Instruction inst) noexcept 
 
 // Todo: Rewrite it
 VmResult BaselineInterpreter::apply(const ObjString &moduleName) {
-    ObjMethodBase *method = Vm::modules().findMethod(moduleName, "main");
+    ObjMethodBase *method = vm.modules().findMethod(moduleName, "main");
     TERMINATE(method != nullptr, "Unresolved symbol ", moduleName.cstr(), "::main.");
 
     callStack.enter(*method);
@@ -149,16 +149,16 @@ VmResult BaselineInterpreter::Invoke() {
 
 VmResult BaselineInterpreter::CallStatic(Value arg0, Value arg1) {
 
-    const ObjString &moduleName = Vm::findString(arg0.value());
-    const ObjString &methodName = Vm::findString(arg1.value());
+    const ObjString &moduleName = vm.findString(arg0.value());
+    const ObjString &methodName = vm.findString(arg1.value());
 
     return callMethod(moduleName, methodName);
 }
 
 VmResult BaselineInterpreter::New(Value arg) noexcept {
-    const ObjString &moduleName = Vm::findString(arg.value());
+    const ObjString &moduleName = vm.findString(arg.value());
 
-    auto &module = Vm::modules().findModule(moduleName)->asModule();
+    auto &module = vm.modules().findModule(moduleName)->asModule();
     auto size = module.fieldsSize();
 
     auto inst = static_cast<Instance *>(allocator.allocate(sizeof(Instance) + size));
@@ -320,7 +320,7 @@ VmResult BaselineInterpreter::fLoad(Value arg) {
 }
 
 VmResult BaselineInterpreter::ldc(Value arg) {
-    const auto &string = Vm::findString(arg.value());
+    const auto &string = vm.findString(arg.value());
     stack.push(string.value());
     return VmResult::SUCCESS;
 }
@@ -358,13 +358,13 @@ VmResult BaselineInterpreter::CmpnEq() {
 VmResult BaselineInterpreter::Jump(Value arg) {
     const auto cond = stack.pop();
     if (cond.toBool()) {
-        callStack.frame().gotoInst(arg.value());
+        callStack.frame().jump(arg.value());
     }
     return VmResult::SUCCESS;
 }
 
 VmResult BaselineInterpreter::Goto(Value arg) {
-    callStack.frame().gotoInst(arg.value());
+    callStack.frame().jump(arg.value());
     return VmResult::SUCCESS;
 }
 

@@ -17,6 +17,7 @@ class ObjModule final : public ObjModuleBase {
 public:
     using Pointer = std::unique_ptr<ObjModule>;
     using Fields = std::list<ObjField>;
+    using size_type = Fields::size_type;
 
 public:
     explicit ObjModule(ObjString moduleName, Fields fields) :
@@ -32,7 +33,7 @@ public:
     ~ObjModule() override = default;
 
 public:
-    inline void addMethod(std::unique_ptr<ObjMethod> &&method) noexcept {
+    inline void addMethod(ObjMethod::Pointer method) noexcept {
         method->setModule(this);
         m_methods.push_back(std::move(method));
     }
@@ -53,12 +54,17 @@ public:
     }
 
     [[nodiscard]]
-    inline std::size_t fieldsSize() const noexcept {
+    ModuleType moduleType() const noexcept override {
+        return ModuleType::OBJ;
+    }
+
+    [[nodiscard]]
+    inline size_type fieldsSize() const noexcept {
         return m_fields.size();
     }
 
     [[nodiscard]]
-    std::size_t offset(std::size_t id) const noexcept {
+    size_type offset(size_type id) const noexcept {
         auto filter = [&](const ObjField &el) {
             return el.nameId == id;
         };
@@ -72,5 +78,5 @@ public:
     }
 
 private:
-    std::list<ObjField> m_fields;
+    Fields m_fields;
 };

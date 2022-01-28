@@ -22,7 +22,7 @@ public:
     void trace();
 
 public:
-    BaselineInterpreter() = default;
+    explicit BaselineInterpreter(Vm& vm) : vm(vm) {}
 
     BaselineInterpreter(BaselineInterpreter&) = delete;
 
@@ -75,4 +75,5 @@ private:
     Locals m_local;
     CallStack callStack;
     DefaultAllocator allocator;
+    Vm& vm;
 };

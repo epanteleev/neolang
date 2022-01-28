@@ -2,9 +2,10 @@
 
 #include <iosfwd>
 #include <cstdint>
-#include <Vm/Value.h>
 #include <utility>
 #include <string>
+
+#include <Vm/Value.h>
 
 struct FlatString;
 

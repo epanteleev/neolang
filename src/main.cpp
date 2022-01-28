@@ -5,7 +5,6 @@
 #include "Modules/StringModule.h"
 #include "Parser/Parser.h"
 
-
 int main(int argv, char** args) {
     if (argv != 2) {
         std::cerr << "Usage: neolang <file>." << std::endl;
@@ -13,18 +12,18 @@ int main(int argv, char** args) {
     }
     std::filesystem::path file(args[1]);
 
+    Vm vm{};
     try {
-        Parser::parse(file);
+        Parser::parse(vm, file);
     } catch (std::exception& ex) {
         std::cerr << ex.what() <<  std::endl;
         return 1;
     }
 
+    vm.registerModule(BaseIO::makeModule());
+    vm.registerModule(StringModule::makeModule());
 
-    Vm::registerModule(BaseIO::makeModule());
-    Vm::registerModule(StringModule::makeModule());
-
-    BaselineInterpreter interpreter;
+    BaselineInterpreter interpreter(vm);
     if(interpreter.apply(file.stem().string().c_str()) != VmResult::SUCCESS) {
         interpreter.trace();
         return 1;

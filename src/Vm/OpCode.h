@@ -5,6 +5,7 @@
 
 /**
  * Represent opcodes of virtual machine.
+ * It is similar on JVM https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html.
  * @minium2
  */
 enum class OpCode : uint8_t {
@@ -17,7 +18,7 @@ enum class OpCode : uint8_t {
     iSTORE,
     iLOAD,
     iRET,
-    I2F,
+    i2F,
     fADD,
     fSUB,
     fMUL,
@@ -26,6 +27,7 @@ enum class OpCode : uint8_t {
     fSTORE,
     fLOAD,
     fRET,
+    f2I, // Unimplemented
     CALL,
     INVOKE,
     NEW,
@@ -34,7 +36,6 @@ enum class OpCode : uint8_t {
     rPUSH,
     rSTORE,
     rLOAD,
-    RET,
     RRET,
     CMPEQ,
     CMPNEQ,
@@ -44,7 +45,8 @@ enum class OpCode : uint8_t {
     OR,
     PUTFIELD,
     GETFIELD,
-    DUP
+    DUP,
+    RET,
 };
 
 constexpr const char *iADD       = "iadd";
@@ -96,7 +98,7 @@ static constexpr auto maps = constexpression::map<constexpression::eternal::stri
                 {iSTORE, OpCode::iSTORE},
                 {iLOAD, OpCode::iLOAD},
                 {iRET, OpCode::iRET},
-                {I2F, OpCode::I2F},
+                {I2F, OpCode::i2F},
                 {fADD, OpCode::fADD},
                 {fSUB, OpCode::fSUB},
                 {fMUL, OpCode::fMUL},
@@ -140,7 +142,7 @@ inline constexpr const char *opCodeToString(OpCode opcode) noexcept {
         case OpCode::iSTORE:     return iSTORE;
         case OpCode::iLOAD:      return iLOAD;
         case OpCode::iRET:       return iRET;
-        case OpCode::I2F:        return I2F;
+        case OpCode::i2F:        return I2F;
         case OpCode::fADD:       return fADD;
         case OpCode::fSUB:       return fSUB;
         case OpCode::fMUL:       return fMUL;

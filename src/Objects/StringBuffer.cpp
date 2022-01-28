@@ -29,6 +29,12 @@ private:
     }
 
 public:
+
+    Node* last() noexcept {
+        std::uint32_t pos;
+        return last(pos);
+    }
+
     std::size_t append(ObjString &&string) noexcept {
         std::uint32_t pos{};
         Node *l = last(pos);
@@ -93,4 +99,23 @@ std::size_t StringBuffer::find(const ObjString &string) noexcept {
     std::uint32_t idx = string.hash();
     std::uint32_t pos = m_nodes[mod(idx)].find(string);
     return makeId(idx, pos);
+}
+
+StringBuffer::iterator StringBuffer::end() {
+    return StringBuffer::iterator(m_nodes->last());
+}
+
+StringBufferIterator &StringBufferIterator::operator++() {
+    m_node = m_node->next;
+    return *this;
+}
+
+StringBufferIterator StringBufferIterator::operator++(int) {
+    StringBufferIterator retval(m_node);
+    m_node = m_node->next;
+    return retval;
+}
+
+StringBufferIterator::reference StringBufferIterator::operator*() const {
+    return m_node->str;
 }

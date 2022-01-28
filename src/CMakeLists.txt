@@ -29,10 +29,18 @@ file(GLOB MODULES_HEADERS Modules/*.h)
 file(GLOB PARSER_SOURCES Parser/*.cpp)
 file(GLOB PARSER_HEADERS Parser/*.h)
 
-add_executable(${PROJECT_NAME} main.cpp ${OBJECTS_SOURCES} ${OBJECTS_HEADERS}
+set(ALL ${OBJECTS_SOURCES} ${OBJECTS_HEADERS}
         ${INTERPRETER_SOURCES} ${INTERPRETER_HEADERS}
         ${VM_SOURCES} ${VM_HEADERS}
         ${MODULES_SOURCES} ${MODULES_HEADERS}
-         ${PARSER_SOURCES} ${PARSER_HEADERS}
-        ${ANTLR_GrammarParser_CXX_OUTPUTS}
+        ${PARSER_SOURCES} ${PARSER_HEADERS}
         )
+
+add_executable(${PROJECT_NAME} main.cpp ${ALL})
+
+add_executable(lexer-test unittests/testLexer.cpp ${ALL})
+add_executable(buff-test unittests/testBuffer.cpp ${ALL})
+
+enable_testing()
+
+add_test(NAME "lexer test" COMMAND lexer-test)
